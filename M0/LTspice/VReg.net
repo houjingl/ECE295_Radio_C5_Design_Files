@@ -1,0 +1,34 @@
+* D:\Altium Projects\ECE295ProjectFiles\M0\LTspice\VReg.asc
+R1 Vout V- 5k
+R2 V- 0 5k
+R3 N005 Vref 330
+XU1 Vref V- N005 0 Vop.out LM741
+Q1 N005 Vop.out Vout 0 TIP29C
+D1 0 Vref 1N5222
+R4 Vout 0 300
+V2 Vac 0 SINE(0 169.7 60) Rser=0.001
+L1 0 Vac 169µ
+L2 0 N003 1µ
+R5 N004 N003 10
+D2 N004 N005 1N4007
+C1 N005 0 470µ
+D3 N001 N002 1N4148
+C2 N002 0 470µ
+V1 N001 0 SINE(0 12 60)
+.model D D
+.lib C:\Users\18701\AppData\Local\LTspice\lib\cmp\standard.dio
+.model NPN NPN
+.model PNP PNP
+.lib C:\Users\18701\AppData\Local\LTspice\lib\cmp\standard.bjt
+.model 1N5222 ako:1N750 bv=2.5
+.model TIP29C ako:NPN (Is=2.447p Xti=3 Eg=1.11 Vaf=100 Bf=208.2 Ise=70.69p
++   Ne=1.565 Ikf=.9743 Nk=.6134 Xtb=1.5 Br=12.59 Isc=11.68n
++   Nc=1.835 Ikr=3.86 Rc=.4685 Cjc=142p Mjc=.4353 Vjc=.75 Fc=.5
++   Cje=188.5p Mje=.4878 Vje=.75 Tr=194.2n Tf=19.85n Itf=164.1
++   Xtf=5.945 Vtf=10 Rb=.1)
+* .op
+K L1 L2 1
+.tran 0 300ms 0 0.1ms
+.lib LM741.lib
+.backanno
+.end
