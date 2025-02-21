@@ -1,6 +1,6 @@
 LTspice 24.0.12 for Windows
 Circuit: * D:\Altium Projects\ECE295ProjectFiles\M0\LTspice\VReg.asc
-Start Time: Fri Jan 31 11:22:43 2025
+Start Time: Sun Feb  9 22:42:54 2025
 Warning: Multiple definitions of model "2scr375p" Type: BJT
 Warning: Multiple definitions of model "bc857b" Type: BJT
 Warning: Multiple definitions of model "bc847c" Type: BJT
@@ -13,7 +13,6 @@ method = modified trap
 gmin = 1e-09
 abstol = 1e-09
 chgtol = 1e-09
-volttol = 1e-05
 Direct Newton iteration for .op point succeeded.
-Total elapsed time: 0.441 seconds.
+Total elapsed time: 0.193 seconds.
 

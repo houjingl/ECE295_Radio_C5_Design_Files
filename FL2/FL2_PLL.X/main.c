@@ -53,7 +53,7 @@ int main(void)
     //reset PLL
     reset_pll();
     // choose PLL & setup desired fvco
-    setup_PLL(SI5351_PLL_A, 32, 0, 1); // 25 * 32 = 800 Mhz for Fvco
+    setup_PLL(SI5351_PLL_A, 32, 0, 1); // 25 * 32 = 800 Mhz for Fvco, this does not change
     setup_clock(SI5351_PLL_A, SI5351_PORT0, 80, 0, 1);//800 / 80 = 10 Mhz
     enable_clocks(enabled);
     
