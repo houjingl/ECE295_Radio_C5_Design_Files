@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <project>                                  
-  <executable name="dist/default/production/M1_Firmware.X.production.elf">                 
+  <executable name="dist/default/production/LCDfirmwaretest.X.production.elf">                 
     <memory name="program">              
       <units>bytes</units>                 
       <length>32768</length>                 
-      <used>3936</used>                     
-      <free>28832</free>                     
+      <used>753</used>                     
+      <free>32015</free>                     
     </memory>                              
     <memory name="data">                 
       <units>bytes</units>                 
       <length>2048</length>                 
-      <used>12</used>                     
-      <free>2036</free>                     
+      <used>7</used>                     
+      <free>2041</free>                     
     </memory>                              
   </executable>                            
 </project>                                 

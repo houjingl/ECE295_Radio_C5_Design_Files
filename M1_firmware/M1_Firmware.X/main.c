@@ -45,30 +45,38 @@ int main(void)
     // choose PLL & setup desired fvco
     setup_PLL(SI5351_PLL_A, 32, 0, 1); // 25 * 32 = 800 Mhz for Fvco, this does not change
     set_phase(90); //set port1 phase to be 90, and port 0 to be 0
-
+        enable_clocks(enabled);
 	while(1)
 	{
+        /*
         division = 80;
         setup_clock(SI5351_PLL_A, SI5351_PORT0, division, 0, 1);//800 / 80 = 10 Mhz
         enable_clocks(enabled);
         _delay_ms(2000); //wait 2s
+         *
         
         division = 266;
         setup_clock(SI5351_PLL_A, SI5351_PORT0, division, 0, 1);//800 / 266 =3 Mhz
         enable_clocks(enabled);
         _delay_ms(2000); //wait 2s
-        
-        division = 80;
-        setup_clock(SI5351_PLL_A, SI5351_PORT0, division, 0, 3);//800 / (80/3) =30 Mhz
-        setup_clock(SI5351_PLL_A, SI5351_PORT1, division, 0, 3);//800 / (80/3) =30 Mhz
-        enable_clocks(enabled);
-        _delay_ms(2000); //wait 2s
+         */
+
         reset_pll();
+        division = 27;
+        setup_clock(SI5351_PLL_A, SI5351_PORT0, division, 0, 1);//800 / (80/3) =30 Mhz
+        setup_clock(SI5351_PLL_A, SI5351_PORT1, division, 0, 1);//800 / (80/3) =30 Mhz
+        _delay_ms(10000); //wait 2s
         
-        division = 160;
-        setup_clock(SI5351_PLL_A, SI5351_PORT0, division, 0, 21);//800 / (160/21) =10.5 Mhz --> accurate to within 1Khz
-        enable_clocks(enabled);
-        _delay_ms(2000); //wait 2s
+        reset_pll();
+        division = 267;
+        setup_clock(SI5351_PLL_A, SI5351_PORT0, division, 0, 1);//800 / (160/21) =10.5 Mhz --> accurate to within 1Khz
+        setup_clock(SI5351_PLL_A, SI5351_PORT1, division, 0, 1);//800 / (80/3) =30 Mhz
+        //enable_clocks(enabled);
+        _delay_ms(10000); //wait 2s
+        
+
+        //800 / user input freqency, simplify, get the denom and num e.g. 800 / 10.5 = 8000 / 105, finding least common multiple 
+ 
 	}
 }
 

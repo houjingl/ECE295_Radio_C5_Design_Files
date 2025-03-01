@@ -2,12 +2,8 @@
 <configurationDescriptor version="65">
   <logicalFolder name="root" displayName="root" projectFiles="true">
     <logicalFolder name="HeaderFiles" displayName="头文件" projectFiles="true">
-      <itemPath>../Si5351.h</itemPath>
-      <itemPath>../twi.h</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles" displayName="源文件" projectFiles="true">
-      <itemPath>../Si5351.c</itemPath>
-      <itemPath>../twi.c</itemPath>
       <itemPath>main.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles" displayName="重要文件" projectFiles="true">
@@ -17,7 +13,7 @@
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
-    <Elem>..</Elem>
+    <Elem>.</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
