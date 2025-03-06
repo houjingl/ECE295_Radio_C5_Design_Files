@@ -25,6 +25,7 @@ Display On          $0F Display on, cursor on, blink on
 
 void lcd_i2C_write_commend(byte data);
 void lcd_i2c_write_data(byte data);
+void lcd_set_cursor(byte row, byte col);
 void lcd_reset();
 void lcd_clear();
 void lcd_init();
