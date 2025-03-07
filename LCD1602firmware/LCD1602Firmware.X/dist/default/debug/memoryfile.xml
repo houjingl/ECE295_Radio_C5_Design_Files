@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <project>                                  
-  <executable name="dist/default/debug/LCDfirmwaretest.X.debug.elf">                 
+  <executable name="dist/default/debug/LCD1602Firmware.X.debug.elf">                 
     <memory name="program">              
       <units>bytes</units>                 
       <length>32768</length>                 
-      <used>745</used>                     
-      <free>32023</free>                     
+      <used>566</used>                     
+      <free>32202</free>                     
     </memory>                              
     <memory name="data">                 
       <units>bytes</units>                 
       <length>2048</length>                 
-      <used>7</used>                     
-      <free>2041</free>                     
+      <used>12</used>                     
+      <free>2036</free>                     
     </memory>                              
   </executable>                            
 </project>                                 

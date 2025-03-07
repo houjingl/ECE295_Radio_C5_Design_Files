@@ -13,12 +13,10 @@
 int main(void) {
     /* Replace with your application code */
     twi_init();
-    lcd_init();
-    lcd_clear();
-    
+    lcd_init(); //0b11110000
+    lcd_set_cursor(1, 1);
     lcd_test();
     
-
     while (1) {
     }
 }
