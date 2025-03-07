@@ -5,6 +5,7 @@
 #include <avr/io.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <math.h>
 
 #define LCD_RS              PORTD5
 #define LCD_RW              PORTD6
@@ -13,14 +14,14 @@
 #define LCD_DATAIN          PORTB
 #define LCD_CONTROL         PORTD
 
-void LCD_writeCommand(uint8_t command);
+void LCD_writeCommand(unsigned char command);
 void LCD_regInit();
-void LCD_writeData(uint8_t data);
+void LCD_writeData(unsigned char data);
 void LCD_Init();
-void LCD_setCursor(uint8_t Line,uint8_t Column);
-void LCD_showChar(uint8_t Line, uint8_t Column, uint8_t Char);
-void LCD_showString(uint8_t Line, uint8_t Column, char* str);
-void LCD_showNum(uint8_t Line, uint8_t Column, uint32_t Num, uint8_t NumLength);
+void LCD_setCursor(unsigned char Line,unsigned char Column);
+void LCD_showChar(unsigned char Line, unsigned char Column, unsigned char Char);
+void LCD_showString(unsigned char Line, unsigned char Column, char* str);
+void LCD_showNum(unsigned char Line, unsigned char Column, unsigned int Num, unsigned char NumLength);
 
 
 

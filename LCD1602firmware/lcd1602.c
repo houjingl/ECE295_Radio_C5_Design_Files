@@ -9,7 +9,7 @@ void LCD_regInit()
     DDRD |= 0xE0;
 }
 
-void LCD_writeCommand(uint8_t command)
+void LCD_writeCommand(unsigned char command)
 {
     //write Command function
     //RS = 0; RW = 0
@@ -26,7 +26,7 @@ void LCD_writeCommand(uint8_t command)
     LCD_CONTROL &= ~(0xE0);
 }
 
-void LCD_writeData(uint8_t data)
+void LCD_writeData(unsigned char data)
 {
     //write Data command
     //Rs = 1; RW = 0
@@ -55,7 +55,7 @@ void LCD_Init()
     LCD_writeCommand(0x01);
 }
 
-void LCD_setCursor(uint8_t Line,uint8_t Column)
+void LCD_setCursor(unsigned char Line,unsigned char Column)
 {
 	if(Line==1)
 	{
@@ -67,15 +67,15 @@ void LCD_setCursor(uint8_t Line,uint8_t Column)
 	}
 }
 
-void LCD_showChar(uint8_t Line, uint8_t Column, uint8_t Char)
+void LCD_showChar(unsigned char Line, unsigned char Column, unsigned char Char)
 {
 	LCD_setCursor(Line,Column);
 	LCD_writeData(Char);
 }
 
-void LCD_showString(uint8_t Line, uint8_t Column, char* str)
+void LCD_showString(unsigned char Line, unsigned char Column, char* str)
 {
-     uint8_t i = 0;
+     unsigned char i = 0;
     LCD_setCursor(Line, Column);
     while (str[i] != '\0'){
         LCD_writeData(str[i]);
@@ -83,21 +83,26 @@ void LCD_showString(uint8_t Line, uint8_t Column, char* str)
     }
 }
 
-int LCD_pow(uint8_t x, uint8_t y)
+unsigned int LCD_pow(unsigned char x, unsigned char y)
 {
-    uint8_t i;
-    int result;
-    for (i = 0; i < y; i++){
-        result *= x;
+    unsigned char i = 0;
+    unsigned int result = 0;
+    while (i < y){
+        result = result * x;
+        i ++;
     }
     return result;
 }
 
-void LCD_showNum(uint8_t Line, uint8_t Column, uint32_t Num, uint8_t NumLength)
+void LCD_showNum(unsigned char Line, unsigned char Column, unsigned int Num, unsigned char NumLength)
 {
-    uint8_t i;
+    unsigned char i = NumLength;
     LCD_setCursor(Line, Column);
-    for (i = NumLength; i > 0; i--){
-        LCD_writeData(Num / LCD_pow(10, i - 1) % 10 + '0');
+    while(i > 0){
+        unsigned char asicIncrement = 0;
+        volatile unsigned int denom = pow(10, i - 1);
+        asicIncrement = Num / denom % 10;
+        LCD_writeData(asicIncrement + '0');
+        i --;
     }
 }

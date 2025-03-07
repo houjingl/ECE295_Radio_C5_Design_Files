@@ -15,9 +15,9 @@ int main(void) {
     LCD_Init();
     
     char * string = "Frequency:";
-    uint32_t frequency_Mhz = 13;
+    int frequency_Mhz = 30;
     char * MHz = "MHz";
-    uint32_t freq_KHz = 3400;
+    int freq_KHz = 3400;
     char * KHz = "KHz";
     char space = ' ';
     
