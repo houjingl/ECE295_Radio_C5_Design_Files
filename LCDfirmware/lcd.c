@@ -82,9 +82,9 @@ void lcd_init()
     lcd_i2C_write_command(0x1E);
     lcd_i2C_write_command(0x39);
     lcd_i2C_write_command(0x1b);
-    lcd_i2C_write_command(0x6E);
+    lcd_i2C_write_command(0x6F);
     lcd_i2C_write_command(0x57);
-    lcd_i2C_write_command(0x7a);
+    lcd_i2C_write_command(0x7F);
     lcd_i2C_write_command(0x38);
     lcd_i2C_write_command(0x0F);
     lcd_i2C_write_command(0x01);//set cursor back to initial position

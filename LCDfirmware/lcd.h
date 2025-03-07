@@ -21,7 +21,7 @@ Display On          $0F Display on, cursor on, blink on
 #include <util/delay.h>
 #define LCD_ADDR_write          0x78
 #define LCD_ADDR_read           0x79
-#define LCD_RST                 PB0
+#define LCD_RST                 PORTB0
 
 void lcd_i2C_write_commend(byte data);
 void lcd_i2c_write_data(byte data);
