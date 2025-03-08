@@ -9,3 +9,6 @@ Note: if connecting SW5A and SW4A both to PCINT0, they need to share one single 
 lower the address is the higher the priority level
 
 With in the ISR, global interrupt is disabled. Write 1 to SREG to enable interrupt can be used to program nested interrupt
+
+SW5A -> PCINT22 -> PCMSK2 ->PCIE2 (ITVEC addr 0x000A PCI2)
+SW4A -> PCINT0 -> PCMSK0 ->PCIE0 (ITVEC addr 0x0008 PCI0)
