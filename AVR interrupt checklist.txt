@@ -1,0 +1,11 @@
+AVR interrupt checklist
+1. Turn on I bit in SREG, global interrupt
+2. Turn on PCIE0 interrupt enable in PCICR
+(Interrupt state can be checked by polling PCIFR reg  PCIF0 bit Pin change interrupt flag 0)
+3. Turn on corresponding bit in PCMSK0 Pin change mask reg 0
+
+Note: if connecting SW5A and SW4A both to PCINT0, they need to share one single interrupt handler (Interrupt vector address 0x0008), might cause trouble
+
+lower the address is the higher the priority level
+
+With in the ISR, global interrupt is disabled. Write 1 to SREG to enable interrupt can be used to program nested interrupt
