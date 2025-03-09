@@ -7,9 +7,9 @@
 #include <stdbool.h>
 #include <math.h>
 
-#define LCD_RS              PORTD5
+#define LCD_RS              PORTD7
 #define LCD_RW              PORTD6
-#define LCD_E               PORTD7
+#define LCD_E               PORTD5
 
 #define LCD_DATAIN          PORTB
 #define LCD_CONTROL         PORTD
