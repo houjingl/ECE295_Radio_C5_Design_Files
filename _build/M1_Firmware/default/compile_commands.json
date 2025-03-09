@@ -1,0 +1,20 @@
+[
+{
+  "directory": "C:/Users/peter/Documents/git/ECE295ProjectFiles/_build/M1_Firmware/default",
+  "command": "c:\\PROGRA~1\\MICROC~1\\xc8\\v3.00\\bin\\xc8-cc.exe -DXPRJ_default=default -D__ATmega324PB__ -IC:\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\cmake\\M1_Firmware\\default\\..\\..\\..\\M1_firmware\\M1_Firmware.X -c -mcpu=ATmega324PB -x c -mdfp=C:/Users/peter/.mchp_packs/Microchip/ATmega_DFP/3.1.264/xc8 -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -LC:/Users/peter/Documents/git/ECE295ProjectFiles/cmake/M1_Firmware/default/../../../M1_firmware/M1_Firmware.X -gdwarf-3 -mno-const-data-in-progmem -o CMakeFiles\\M1_Firmware_default_default_XC8_compile.dir\\C_\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\M1_firmware\\M1_Firmware.X\\main.c.o -c C:\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\M1_firmware\\M1_Firmware.X\\main.c",
+  "file": "C:\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\M1_firmware\\M1_Firmware.X\\main.c",
+  "output": "CMakeFiles\\M1_Firmware_default_default_XC8_compile.dir\\C_\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\M1_firmware\\M1_Firmware.X\\main.c.o"
+},
+{
+  "directory": "C:/Users/peter/Documents/git/ECE295ProjectFiles/_build/M1_Firmware/default",
+  "command": "c:\\PROGRA~1\\MICROC~1\\xc8\\v3.00\\bin\\xc8-cc.exe -DXPRJ_default=default -D__ATmega324PB__ -IC:\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\cmake\\M1_Firmware\\default\\..\\..\\..\\M1_firmware\\M1_Firmware.X -c -mcpu=ATmega324PB -x c -mdfp=C:/Users/peter/.mchp_packs/Microchip/ATmega_DFP/3.1.264/xc8 -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -LC:/Users/peter/Documents/git/ECE295ProjectFiles/cmake/M1_Firmware/default/../../../M1_firmware/M1_Firmware.X -gdwarf-3 -mno-const-data-in-progmem -o CMakeFiles\\M1_Firmware_default_default_XC8_compile.dir\\C_\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\M1_firmware\\Si5351.c.o -c C:\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\M1_firmware\\Si5351.c",
+  "file": "C:\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\M1_firmware\\Si5351.c",
+  "output": "CMakeFiles\\M1_Firmware_default_default_XC8_compile.dir\\C_\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\M1_firmware\\Si5351.c.o"
+},
+{
+  "directory": "C:/Users/peter/Documents/git/ECE295ProjectFiles/_build/M1_Firmware/default",
+  "command": "c:\\PROGRA~1\\MICROC~1\\xc8\\v3.00\\bin\\xc8-cc.exe -DXPRJ_default=default -D__ATmega324PB__ -IC:\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\cmake\\M1_Firmware\\default\\..\\..\\..\\M1_firmware\\M1_Firmware.X -c -mcpu=ATmega324PB -x c -mdfp=C:/Users/peter/.mchp_packs/Microchip/ATmega_DFP/3.1.264/xc8 -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -LC:/Users/peter/Documents/git/ECE295ProjectFiles/cmake/M1_Firmware/default/../../../M1_firmware/M1_Firmware.X -gdwarf-3 -mno-const-data-in-progmem -o CMakeFiles\\M1_Firmware_default_default_XC8_compile.dir\\C_\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\M1_firmware\\twi.c.o -c C:\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\M1_firmware\\twi.c",
+  "file": "C:\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\M1_firmware\\twi.c",
+  "output": "CMakeFiles\\M1_Firmware_default_default_XC8_compile.dir\\C_\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\M1_firmware\\twi.c.o"
+}
+]

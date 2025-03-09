@@ -1,0 +1,4 @@
+C:/Users/peter/Documents/git/ECE295ProjectFiles/_build/rotary_encoder/default/CMakeFiles/rotary_encoder_default_default_XC8_compile.dir
+C:/Users/peter/Documents/git/ECE295ProjectFiles/_build/rotary_encoder/default/CMakeFiles/rotary_encoder_default_default.elf.dir
+C:/Users/peter/Documents/git/ECE295ProjectFiles/_build/rotary_encoder/default/CMakeFiles/edit_cache.dir
+C:/Users/peter/Documents/git/ECE295ProjectFiles/_build/rotary_encoder/default/CMakeFiles/rebuild_cache.dir

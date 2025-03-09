@@ -1,0 +1,4 @@
+C:/Users/peter/Documents/git/ECE295ProjectFiles/_build/LCDfirmwaretest/default/CMakeFiles/LCDfirmwaretest_default_default_XC8_compile.dir
+C:/Users/peter/Documents/git/ECE295ProjectFiles/_build/LCDfirmwaretest/default/CMakeFiles/LCDfirmwaretest_default_default.elf.dir
+C:/Users/peter/Documents/git/ECE295ProjectFiles/_build/LCDfirmwaretest/default/CMakeFiles/edit_cache.dir
+C:/Users/peter/Documents/git/ECE295ProjectFiles/_build/LCDfirmwaretest/default/CMakeFiles/rebuild_cache.dir

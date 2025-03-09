@@ -1,0 +1,8 @@
+[
+{
+  "directory": "C:/Users/peter/Documents/git/ECE295ProjectFiles/_build/test/default",
+  "command": "c:\\PROGRA~1\\MICROC~1\\xc8\\v3.00\\bin\\xc8-cc.exe -DXPRJ_default=default -D__ATmega324PB__ -IC:\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\cmake\\test\\default\\..\\..\\..\\LCDfirmware\\test.X -c -mcpu=ATmega324PB -x c -mdfp=C:/Users/peter/.mchp_packs/Microchip/ATmega_DFP/3.1.264/xc8 -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -LC:/Users/peter/Documents/git/ECE295ProjectFiles/cmake/test/default/../../../LCDfirmware/test.X -gdwarf-3 -mno-const-data-in-progmem -o CMakeFiles\\test_default_default_XC8_compile.dir\\C_\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\LCDfirmware\\test.X\\main.c.o -c C:\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\LCDfirmware\\test.X\\main.c",
+  "file": "C:\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\LCDfirmware\\test.X\\main.c",
+  "output": "CMakeFiles\\test_default_default_XC8_compile.dir\\C_\\Users\\peter\\Documents\\git\\ECE295ProjectFiles\\LCDfirmware\\test.X\\main.c.o"
+}
+]
