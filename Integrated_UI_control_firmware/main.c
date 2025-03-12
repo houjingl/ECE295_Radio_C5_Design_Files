@@ -31,6 +31,7 @@ void encoder_init(void);
 int main(void) {
     
     //INIT SECTION
+    
     //TXEN
     DDRD |= (1 << TXEN_BIT);
     PORTD &= ~(1 << TXEN_BIT); //default TXEN = 0 -> TX mode
