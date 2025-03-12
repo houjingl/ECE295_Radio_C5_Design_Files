@@ -45,7 +45,7 @@ int main(void)
     // choose PLL & setup desired fvco
     setup_PLL(SI5351_PLL_A, 32, 0, 1); // 25 * 32 = 800 Mhz for Fvco, this does not change
     set_phase(90); //set port1 phase to be 90, and port 0 to be 0
-        enable_clocks(enabled);
+    enable_clocks(enabled);
 	while(1)
 	{
         /*

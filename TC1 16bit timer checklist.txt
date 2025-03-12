@@ -1,0 +1,5 @@
+TC1 16bit timer
+Normal Mode -> TCCRnA.WGMn[3:0] = 0x0
+TIFR1 TOV will be flagged to trigger interrupt when TCNT becomes zero
+TOV flag automatically cleared by interrupt
+New counter value can be written anytime in normal mode
