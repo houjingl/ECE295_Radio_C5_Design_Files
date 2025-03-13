@@ -1,8 +1,4 @@
-#include <avr/io.h>
-#include <avr/interrupt.h>
-
-
-
+#include "rotary_encoder.h"
 
 void encoder_setup(void)
 { 

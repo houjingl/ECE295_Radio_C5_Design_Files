@@ -70,22 +70,23 @@ int main(void) {
     setup_PLL(SI5351_PLL_A, 32, 0, 1); // 25 * 32 = 800 Mhz for Fvco, this does not change
     set_phase(90); //set port1 phase to be 90, and port 0 to be 0
     enable_clocks(enabled);
+
+    //Important variables
+    bool user_input_detected = false;
+    bool computer_input_detected = false;
+    unsigned char TXEN_N = 0;
+    unsigned int user_confirmed_freq_Mhz = 0;
+    unsigned int user_confirmed_freq_Khz = 0;
+    unsigned int PLL_freq = 0;
+    unsigned int division = 0;
+    
     while (1) {
-        
-        //Important variables
-        bool user_input_detected = false;
-        bool computer_input_detected = false;
-        unsigned char TXEN_N = 0;
-        unsigned int user_confirmed_freq_Mhz = 0;
-        unsigned int user_confirmed_freq_Khz = 0;
-        unsigned int PLL_freq = 0;
-        unsigned int division = 0;
         LCD_showString(1, 1, homepageMessage);
 
         //User menu layers:
         //1st: Homepage -> awaiting user inputs, prompt user to push any of the three button to start inputing
-        //     in the main time, detect computer inputs from uart
-        //     which ever comes first gets to be served
+        //     in the mean time, detect computer inputs from uart
+        //     whichever comes first gets to be served
 
         /**************************/
         //computer input handler not implemented
@@ -94,15 +95,14 @@ int main(void) {
 
         /**************************/
         //User input handler
-
         if (button1_read() || button2_read() || button3_read()){
             user_input_detected = true;
             bool layer2 = false;
             bool layer3 = false;
             //2nd layer user menu -> prompt user for mode selection
             LCD_showString_clear_delay_1s(1, 1, "Top Button for TX");
-            LCD_showString_clear_delay_1s(1, 1, "Botton Button for RX");
-            LCD_showString_clear_delay_1s(1, 1, "Middle Button to Comfirm");
+            LCD_showString_clear_delay_1s(1, 1, "Bottom Button for RX");
+            LCD_showString_clear_delay_1s(1, 1, "Middle Button to Confirm");
             layer2 = true;
             while(user_input_detected){
                 while(layer2){
@@ -119,7 +119,7 @@ int main(void) {
 
                     if (button2_read()){
                         layer2 = false;
-                        LCD_showString(1,1, "Mode Comfirmed:");
+                        LCD_showString(1,1, "Mode Confirmed:");
                         if(TXEN_N){
                             LCD_showString_clear_delay_1s(2, 1, "RX Mode");
                         } else {
