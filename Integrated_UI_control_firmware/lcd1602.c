@@ -64,7 +64,7 @@ void LCD_Clear_screen()
 //Line from 1-2, Column from 1 - 16
 void LCD_setCursor(unsigned char Line,unsigned char Column)
 {
-	if(Line==1)
+    if(Line==1)
 	{
 		LCD_writeCommand(0x80 | (Column-1));
 	}
@@ -76,7 +76,7 @@ void LCD_setCursor(unsigned char Line,unsigned char Column)
 
 void LCD_showChar(unsigned char Line, unsigned char Column, unsigned char Char)
 {
-	LCD_setCursor(Line,Column);
+	LCD_setCursor(Line, Column);
 	LCD_writeData(Char);
 }
 
@@ -117,6 +117,6 @@ void LCD_showNum(unsigned char Line, unsigned char Column, unsigned int Num, uns
 void LCD_showString_clear_delay_1s(unsigned char Line, unsigned char Column, char* str)
 {
     LCD_showString(Line, Column, str);
-    _delay_ms(1000);
+    _delay_ms(2000);
     LCD_Clear_screen();
 }

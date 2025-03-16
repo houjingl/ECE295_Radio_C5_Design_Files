@@ -10,7 +10,7 @@ void encoder_setup(void)
     //Enable MCU global interrupt
 
     DDRA &= ~((1 << DDA0) | (1 << DDA1)); //set PA0-1 = input
-    DDRD &= ~((1 << DDD6) | (1 << DDD7)); //set PD6 and 7 as input
+    DDRC &= ~((1 << DDC6) | (1 << DDC7)); //set PC6 and 7 as input
 
     //Unsure about the exact functionality of this line and the effect on the funcaionality of the firmware
     PORTA |= ((1 << PA0)|(1 << PA1)|(1 << PA2)|(1 << PA3)); // enable internal pull-up

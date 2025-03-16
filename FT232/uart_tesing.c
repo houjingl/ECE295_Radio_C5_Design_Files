@@ -70,7 +70,7 @@ int main(void) {
     while (1) {
         // Send a text string (this is converted to serial frames with the configurewd frame format).
         USART0_SendString("ATmega324PB USART test: Sending 'A' as a frame\r\n");
-        // Send a test frame (the character 'A' with start and stop bits added by hardware)
+        // Send a test frame (the character 'A' with Astart and stop bits added by hardware)
         USART0_SendTestFrame();
         USART0_SendString("\r\n");
         // Wait for 1 second before sending again.
