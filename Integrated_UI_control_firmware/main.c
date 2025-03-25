@@ -48,7 +48,7 @@ int main(void) {
     char * TX = "TX";
     char * RX = "RX";
 
-            
+
     //ENCODER
     encoder_setup();
     encoder_init();
