@@ -9,7 +9,7 @@
 #endif
 
 #define BAUD 9600
-#define UBRR_VALUE ((F_CPU / (16UL * BAUD)) - 1)
+#define UBRR_VALUE ((1000000 / (16UL * BAUD)) - 1)
 
 #define CMD_BUFFER_SIZE 64
 
@@ -27,23 +27,23 @@ void USART0_Init(void) {
     
     // Enable receiver and transmitter; 
     // You can later add RX complete interrupts if desired.
-    UCSR0B = (1 << RXEN0) | (1 << TXEN0);
+    UCSR0B = (1 << RXEN) | (1 << TXEN);
     
     // Set frame format: asynchronous mode, no parity, 1 stop bit, 8 data bits.
-    UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+    UCSR0C = (1 << UCSZ1) | (1 << UCSZ0);
 }
 
 // Transmit one character via USART0.
 void USART0_Transmit(uint8_t data) {
     // Wait until transmit buffer is empty (UDRE0 flag set).
-    while (!(UCSR0A & (1 << UDRE0)));
+    while (!(UCSR0A & (1 << UDRE)));
     UDR0 = data;
 }
 
 // Receive one character via USART0.
 uint8_t USART0_Receive(void) {
     // Wait until data is received (RXC0 flag set).
-    while (!(UCSR0A & (1 << RXC0)));
+    while (!(UCSR0A & (1 << RXC)));
     return UDR0;
 }
 

@@ -10,7 +10,7 @@
 // Desired baud rate
 #define BAUD 9600
 // Calculate the baud rate register value using the formula from the datasheet
-#define UBRR_VALUE ((F_CPU / (16UL * BAUD)) - 1)
+#define UBRR_VALUE ((1000000 / (16UL * BAUD)) - 1)
 
 // USART0 initialization based on datasheet sections 23.12 and 24.5:
 // Frame format: 1 start bit, 8 data bits, no parity, 1 stop bit.
@@ -26,19 +26,19 @@ void USART0_Init(void) {
     // UCSR0B (USART Control and Status Register B)
     // Enable transmitter (TXEN0) and receiver (RXEN0)
     // (Optionally, you can enable RX complete interrupt by adding (1 << RXCIE0))
-    UCSR0B = (1 << TXEN0) | (1 << RXEN0);
+    UCSR0B = (1 << TXEN) | (1 << RXEN);
     
     // UCSR0C (USART Control and Status Register C)
     // Configure frame format: Asynchronous mode (UMSEL01:0 = 00), no parity (UPM01:0 = 00),
     // one stop bit (USBS0 = 0), and 8 data bits (UCSZ01:0 = 11).
-    UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+    UCSR0C = (1 << UCSZ1) | (1 << UCSZ0);
     // The start bit and stop bit are added automatically by the hardware.
 }
 
 // Transmit a single character over USART0.
 void USART0_Transmit(uint8_t data) {
     // Wait for the transmit buffer to be empty (UDRE0 bit in UCSR0A).
-    while (!(UCSR0A & (1 << UDRE0)));
+    while (!(UCSR0A & (1 << UDRE)));
     UDR0 = data;  // Write data to USART Data Register.
 }
 
@@ -52,7 +52,7 @@ void USART0_SendString(const char *str) {
 // Receive a single character over USART0.
 uint8_t USART0_Receive(void) {
     // Wait for data to be received (RXC0 bit in UCSR0A).
-while (!(UCSR0A & (1 << RXC0)));
+while (!(UCSR0A & (1 << RXC)));
     return UDR0;
 }
 
