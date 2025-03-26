@@ -1,8 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdint.h>
-#include <avr/eeprom.h>
-
+#include "ft232_testing.h"
 // Define the CPU clock frequency; adjust as needed.
 #ifndef F_CPU
 #define F_CPU 16000000UL  // 16 MHz clock
@@ -11,7 +10,7 @@
 // Desired baud rate
 #define BAUD 9600
 // Calculate the baud rate register value using the formula from the datasheet
-#define UBRR_VALUE ((F_CPU / (16UL * BAUD)) - 1)
+#define UBRR_VALUE ((F_CPU / (8UL * BAUD)) - 1) //double speed 
 
 // USART0 initialization based on datasheet sections 23.12 and 24.5:
 // Frame format: 1 start bit, 8 data bits, no parity, 1 stop bit.
@@ -22,7 +21,7 @@ void USART0_Init(void) {
     
     // UCSR0A (USART Control and Status Register A)
     // Clear U2X0 (Double Speed) and MPCM0 (Multi-processor Communication Mode)
-    UCSR0A = 0;  // Normal speed operation
+    UCSR0A = (1<<U2X);  // Double speed operation
     
     // UCSR0B (USART Control and Status Register B)
     // Enable transmitter (TXEN0) and receiver (RXEN0)
@@ -51,7 +50,7 @@ void USART0_SendString(const char *str) {
 }
 
 // Receive a single character over USART0.
-unsigned char USART0_Receive(void) {
+uint8_t USART0_Receive(void) {
     // Wait for data to be received (RXC0 bit in UCSR0A).
 while (!(UCSR0A & (1 << RXC)));
     return UDR0;
@@ -68,14 +67,17 @@ int main(void) {
     // Initialize USART0
     USART0_Init();
     
+    
+    
     while (1) {
         // Send a text string (this is converted to serial frames with the configurewd frame format).
-        USART0_SendString("ATmega324PB USART test: Sending 'A' as a frame\r\n");
-        // Send a test frame (the character 'A' with Astart and stop bits added by hardware)
+        USART0_SendString("ATmega324PB USART test:Sending 'A' as a frame\r\n");
+        _delay_ms(1000);
+        // Send a test frame (the character 'A' with start and stop bits added by hardware)
         USART0_SendTestFrame();
         USART0_SendString("\r\n");
-        // Wait for 1 second before sending again.
-        _delay_ms(100);
+        //Wait for 1 second before sending again.
+        _delay_ms(1000);
     }
     
     return 0;
