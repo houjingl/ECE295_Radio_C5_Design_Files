@@ -4,12 +4,14 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "uart.h"
+
 #ifndef F_CPU
 #define F_CPU 16000000UL    // 16 MHz clock
 #endif
 
 #define BAUD 9600
-#define UBRR_VALUE ((1000000 / (16UL * BAUD)) - 1)
+#define UBRR_VALUE ((F_CPU / (8UL * BAUD)) - 1)
 
 #define CMD_BUFFER_SIZE 64
 
@@ -23,7 +25,7 @@ void USART0_Init(void) {
     UBRR0L = (unsigned char)UBRR_VALUE;
     
     // Clear UCSR0A (normal speed mode, no multi-processor mode)
-    UCSR0A = 0;
+    UCSR0A = (1<<U2X);
     
     // Enable receiver and transmitter; 
     // You can later add RX complete interrupts if desired.
@@ -65,10 +67,10 @@ void ProcessCATCommand(const char *cmd) {
         // TX command: expects a parameter '1' (enable) or '0' (disable) after "TX"
         if (strlen(cmd) >= 3) {
             if (cmd[2] == '1') {
-                PORTD |= (1 << PD2);  // Example: set PD2 high to enable TX
+                PORTD |= (1 << PD3);  // Example: set PD2 high to enable TX
                 USART0_SendString("TX Enabled\r\n");
             } else if (cmd[2] == '0') {
-                PORTD &= ~(1 << PD2); // Set PD2 low to disable TX
+                PORTD &= ~(1 << PD3); // Set PD2 low to disable TX
                 USART0_SendString("TX Disabled\r\n");
             } else {
                 USART0_SendString("Invalid TX parameter\r\n");
@@ -112,7 +114,7 @@ int main(void) {
     
     // For the TX command, assume PD2 controls a TX enable signal.
     // Configure PD2 as output.
-    DDRD |= (1 << PD2);
+    DDRD |= (1 << PD3);
     
     char cmdBuffer[CMD_BUFFER_SIZE];
     uint8_t index = 0;
