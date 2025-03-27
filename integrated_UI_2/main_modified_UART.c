@@ -17,6 +17,7 @@
 #include "Si5351.h"
 #include "button.h"
 #include "ft232.h"
+#include "timer.h"
 #include "lcd1602.h"
 #include "rotary_encoder.h"
 
