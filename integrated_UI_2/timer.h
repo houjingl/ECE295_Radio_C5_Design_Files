@@ -17,6 +17,6 @@
 #define PRESCALER_1024 (0b101)
 #define Target_frequency (1000)
 
-void timer_setup(void);
+void timer_setup();
 
 #endif

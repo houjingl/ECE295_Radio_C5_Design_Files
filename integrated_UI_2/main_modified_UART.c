@@ -23,13 +23,17 @@
 
 #define TXEN_BIT PD3
 
+//global variables
 volatile int encoder1_count = 0;         // Mhz
 volatile int encoder2_count = 0;         // Khz
 volatile unsigned char old_state_1 = 0;  // old state for encoder 1 (PA0,PA1)
 volatile unsigned char old_state_2 = 0;  // old state for encoder 2 (PA2,PA3)
+char cmdBuffer[CMD_BUFFER_SIZE]; // CAT command buffer
+uint8_t index = 0;  // Index for command buffer
+int counter =0; // counter for timer
+bool computer_input_detected = false;  // Flag for computer input
 
-void encoder_init(void);
-
+//FSM
 typedef enum {
   STATE_WAIT,
   STATE_TUTORIAL,
@@ -40,9 +44,16 @@ typedef enum {
   STATE_COMPUTER_MODE
 } State;
 
+// user interface state machine
 int page_index = 0;
 State current_state = STATE_WAIT;  // set initial state to STATE_WAIT
 
+//additional function
+void handle_UART(bool computer_input_detected);
+void encoder_init(void);
+
+
+// main 
 int main(void) {
   // INIT SECTION
   // TXEN
@@ -66,11 +77,9 @@ int main(void) {
 
   // UART:
   USART0_Init();
-  //  For the TX command, assume PD2 controls a TX enable signal.
-  //  Configure PD2 as output.
+  //  For the TX command, assume PD3 controls a TX enable signal.
+  //  Configure PD3 as output.
   DDRD |= (1 << PD3);
-  char cmdBuffer[CMD_BUFFER_SIZE];
-  uint8_t index = 0;
 
   // ENCODER:
   encoder_setup();
@@ -97,8 +106,6 @@ int main(void) {
 
   // Important variables
   bool user_input_detected = false;
-  bool computer_input_detected =
-      false;  // 没想好怎么检测这个。可能需要把它设置成global variable检测
   unsigned char TXEN_N = 0;
   unsigned int user_confirmed_freq_Mhz = 0;
   unsigned int user_confirmed_freq_Khz = 0;
@@ -200,7 +207,7 @@ int main(void) {
           LCD_showChar(2, 7, space);
           LCD_showNum(2, 8, user_confirmed_freq_Khz, 3);
           LCD_showString(2, 11, KHz);
-          LED_showString_clear_delay_1s(1, 16, " ");
+          LCD_showString_clear_delay_1s(1, 16, " ");
           current_state = STATE_CONFIG_PLL_TXEN;
         }
         break;
@@ -292,6 +299,18 @@ ISR(PCINT2_vect) {
   old_state_2 = new_state_2;
 }
 
+// set up encoder
+void encoder_init() {
+  unsigned char initA1 = (PINA & (1 << PA0)) ? 1 : 0;
+  unsigned char initB1 = (PINA & (1 << PA1)) ? 1 : 0;
+  old_state_1 = (initA1 << 1) | initB1;
+
+  unsigned char initA2 = (PINC & (1 << PC6)) ? 1 : 0;
+  unsigned char initB2 = (PINC & (1 << PC7)) ? 1 : 0;
+  old_state_2 = (initA2 << 1) | initB2;
+}
+
+// Interrupt for Timer
 ISR(TIMER0_COMPA_vector) {  // count for 1 second
   // counter = (counter + 1) % 1000;
   // if (counter == 999) {
@@ -314,19 +333,9 @@ ISR(TIMER0_COMPA_vector) {  // count for 1 second
   }
 }
 
-// set up encoder
-void encoder_init() {
-  unsigned char initA1 = (PINA & (1 << PA0)) ? 1 : 0;
-  unsigned char initB1 = (PINA & (1 << PA1)) ? 1 : 0;
-  old_state_1 = (initA1 << 1) | initB1;
-
-  unsigned char initA2 = (PINC & (1 << PC6)) ? 1 : 0;
-  unsigned char initB2 = (PINC & (1 << PC7)) ? 1 : 0;
-  old_state_2 = (initA2 << 1) | initB2;
-}
-
-void handle_UART(computer_input_detected) {
-  USART0_SendString("ATmega324PB CAT Interface Ready\r\n");
+//uart 
+void handle_UART(bool computer_input_detected) {
+  USART0_SendString("ATmega324PB no Interface Ready\r\n");
   while (computer_input_detected) {
     uint8_t received = USART0_Receive();
     // Echo back the received character (optional)
