@@ -138,7 +138,7 @@ int main(void) {
       case STATE_WAIT:
         LCD_showString(1, 1, "PUSH ANY BUTTON");
         LCD_showString(2, 1, "TO START");
-        computer_input_detected =  UCSR0A & (1 << UDRE);
+        computer_input_detected =  UCSR0A & (1 << TXC);
         if (computer_input_detected) {
           current_state = STATE_COMPUTER_MODE;
           break;

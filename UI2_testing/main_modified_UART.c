@@ -32,19 +32,36 @@
 //encoder
 volatile int encoder1_count = 0;         // Mhz
 volatile int encoder2_count = 0;         // Khz
+volatile unsigned char old_state_1 = 0;  // old state for encoder 1 (PA0,PA1)
+volatile unsigned char old_state_2 = 0;  // old state for encoder 2 (PA2,PA3)
+bool computer_input_detected = false;    // Flag for computer input 可以删掉
 
 //uart
 extern volatile int Mhz;                 // Mhz from UART
 extern volatile int Khz;                 // Khz from UART
 extern int state;                        // state for UART display
-
 char cmdBuffer[CMD_BUFFER_SIZE];         // CAT command buffer
 uint8_t index = 0;                       // Index for command buffer
 
-volatile unsigned char old_state_1 = 0;  // old state for encoder 1 (PA0,PA1)
-volatile unsigned char old_state_2 = 0;  // old state for encoder 2 (PA2,PA3)
+//freq
+unsigned int user_confirmed_freq_Mhz = 0;
+unsigned int user_confirmed_freq_Khz = 0;
+unsigned int PLL_freq = 0;
+
+//LCD
+char* frequency = "Frequency:";
+char* MHz = "MHz";
+char* KHz = "KHz";
+char space = ' ';
+char* modeselection = "Please";
+char* TX = "TX";
+char* RX = "RX";
+
+//Timer
 int counter = 0;                         // counter for timer
-bool computer_input_detected = false;    // Flag for computer input
+
+//TXEN
+unsigned char TXEN_N = 0;
 
 
 // FSM
@@ -66,6 +83,7 @@ State current_state = STATE_WAIT;  // set initial state to STATE_WAIT
 // additional function
 void handle_UART(bool computer_input_detected);
 void encoder_init(void);
+void comp_display();
 
 // main
 int main(void) {
@@ -78,13 +96,6 @@ int main(void) {
   LCD_regInit();
   LCD_Init();
   char* homepageMessage = "PUSH ANY BUTTONTO START";
-  char* frequency = "Frequency:";
-  char* MHz = "MHz";
-  char* KHz = "KHz";
-  char space = ' ';
-  char* modeselection = "Please";
-  char* TX = "TX";
-  char* RX = "RX";
 
   unsigned int tutorial_time_counter = 0;
 
@@ -125,9 +136,6 @@ int main(void) {
   // Important variables
   bool user_input_detected = false;
   unsigned char TXEN_N = 0;
-  unsigned int user_confirmed_freq_Mhz = 0;
-  unsigned int user_confirmed_freq_Khz = 0;
-  unsigned int PLL_freq = 0;
   unsigned int cd = 0;
 
  
@@ -284,29 +292,7 @@ int main(void) {
         break;
 
       case UART_DISPLAY:
-        if(state == 1){ //FA
-          LCD_showString(1, 1, frequency);
-          LCD_showNum(2, 1, Mhz, 3);
-          LCD_showString(2, 4, MHz);
-          LCD_showChar(2, 7, space);
-          LCD_showNum(2, 8, Khz, 3);
-          LCD_showString(2, 11, KHz);
-          if (button2_read()) { // confirm
-            user_confirmed_freq_Mhz = Mhz;
-            user_confirmed_freq_Khz = Khz;
-            PLL_freq = encoder1_count * 1000000 + encoder2_count * 1000;
-            LCD_showString(1, 1, "Confirmed Freq:");
-            LCD_showNum(2, 1, Mhz, 3);
-            LCD_showString(2, 4, MHz);
-            LCD_showChar(2, 7, space);
-            LCD_showNum(2, 8, Khz, 3);
-            LCD_showString(2, 11, KHz);
-            LCD_showString_clear_delay_1s(1, 16, " ");
-            current_state = STATE_CONFIG_PLL_TXEN;
-          }
-          computer_input_detected = false; // Reset the flag to stop processing
-          break;
-        }
+        comp_display();
 
       default:
         current_state = STATE_WAIT;
@@ -382,7 +368,7 @@ void encoder_init() {
 // Interrupt for Timer
 ISR(TIMER0_COMPA_vector) {  // count for 1 second
   // counter = (counter + 1) % 1000;
-  // if (counter == 999) {
+  // if (counter == 999) 
   // 等待1s
   if (counter != 999) {
     counter++;
@@ -431,41 +417,55 @@ void handle_UART(bool computer_input_detected) {
 }
 
 void comp_display(){
-  if(state == 1){ //FA
-    LCD_showString(1, 1, frequency);
-    LCD_showNum(2, 1, Mhz, 3);
-    LCD_showString(2, 4, MHz);
-    LCD_showChar(2, 7, space);
-    LCD_showNum(2, 8, Khz, 3);
-    LCD_showString(2, 11, KHz);
-    if (button2_read()) { // confirm
-      user_confirmed_freq_Mhz = Mhz;
-      user_confirmed_freq_Khz = Khz;
-      PLL_freq = encoder1_count * 1000000 + encoder2_count * 1000;
-      LCD_showString(1, 1, "Confirmed Freq:");
+  while(1){
+    if(state == 1){ //FA
+      LCD_showString(1, 1, frequency);
       LCD_showNum(2, 1, Mhz, 3);
       LCD_showString(2, 4, MHz);
       LCD_showChar(2, 7, space);
       LCD_showNum(2, 8, Khz, 3);
       LCD_showString(2, 11, KHz);
-      LCD_showString_clear_delay_1s(1, 16, " ");
-      current_state = STATE_CONFIG_PLL_TXEN;
+      if (button2_read()) { // confirm
+        user_confirmed_freq_Mhz = Mhz;
+        user_confirmed_freq_Khz = Khz;
+        PLL_freq = encoder1_count * 1000000 + encoder2_count * 1000;
+        LCD_showString(1, 1, "Confirmed Freq:");
+        LCD_showNum(2, 1, Mhz, 3);
+        LCD_showString(2, 4, MHz);
+        LCD_showChar(2, 7, space);
+        LCD_showNum(2, 8, Khz, 3);
+        LCD_showString(2, 11, KHz);
+        LCD_showString_clear_delay_1s(1, 16, " ");
+        current_state = STATE_CONFIG_PLL_TXEN;
+      }
+      computer_input_detected = false; // Reset the flag to stop processing
+      break;
     }
-    computer_input_detected = false; // Reset the flag to stop processing
-    break;
+    else if(state == 2){ //TX 
+      LCD_showString(1, 1, "Mode Confirmed:");
+      LCD_showString_clear_delay_1s(2, 1, "TX Mode"); 
+      TXEN_N=0;
+      _delay_ms(100);
+      current_state = STATE_WAIT; 
+      break;
+    }
+    else if(state == 3){ //RX
+      LCD_showString(1, 1, "Mode Confirmed:");
+      LCD_showString_clear_delay_1s(2, 1, "RX Mode");   
+      TXEN_N=1;
+      _delay_ms(100);   
+      current_state = STATE_WAIT; 
+      break;
+    }
+    else if(state == 4){ //IF 未完成
+      LCD_showString(1, 1, "IF:");
+      LCD_showNum(2,1,000,3);
+      
+      LCD_showNum(2,4,)
+      _delay_ms(100);   
+      current_state = STATE_WAIT; 
+      break;
+    }
   }
-  else if(state == 2){ //TX 
-    LCD_showString(1, 1, "Mode Confirmed:");
-    LCD_showString_clear_delay_1s(2, 1, "TX Mode");      
-  }
-  else if(state == 3){ //RX
-    LCD_showString(1, 1, "Mode Confirmed:");
-    LCD_showString_clear_delay_1s(2, 1, "RX Mode");      
-  }
-  else if(state == 4){
-    LCD_showString(1, 1, "IF:");
-    LCD_showNum(2,1,000,3);
-    LCD_showNum(2,4,)
-    
-  }
+
 }
