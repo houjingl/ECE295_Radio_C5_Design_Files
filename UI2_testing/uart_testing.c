@@ -26,7 +26,7 @@
 #define AD 10
 #define BD 1000000
 
-
+//push the damn stupid program
 // global variables
 
 //encoder
