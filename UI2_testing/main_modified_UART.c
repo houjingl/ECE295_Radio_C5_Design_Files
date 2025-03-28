@@ -429,3 +429,43 @@ void handle_UART(bool computer_input_detected) {
     }
   }
 }
+
+void comp_display(){
+  if(state == 1){ //FA
+    LCD_showString(1, 1, frequency);
+    LCD_showNum(2, 1, Mhz, 3);
+    LCD_showString(2, 4, MHz);
+    LCD_showChar(2, 7, space);
+    LCD_showNum(2, 8, Khz, 3);
+    LCD_showString(2, 11, KHz);
+    if (button2_read()) { // confirm
+      user_confirmed_freq_Mhz = Mhz;
+      user_confirmed_freq_Khz = Khz;
+      PLL_freq = encoder1_count * 1000000 + encoder2_count * 1000;
+      LCD_showString(1, 1, "Confirmed Freq:");
+      LCD_showNum(2, 1, Mhz, 3);
+      LCD_showString(2, 4, MHz);
+      LCD_showChar(2, 7, space);
+      LCD_showNum(2, 8, Khz, 3);
+      LCD_showString(2, 11, KHz);
+      LCD_showString_clear_delay_1s(1, 16, " ");
+      current_state = STATE_CONFIG_PLL_TXEN;
+    }
+    computer_input_detected = false; // Reset the flag to stop processing
+    break;
+  }
+  else if(state == 2){ //TX 
+    LCD_showString(1, 1, "Mode Confirmed:");
+    LCD_showString_clear_delay_1s(2, 1, "TX Mode");      
+  }
+  else if(state == 3){ //RX
+    LCD_showString(1, 1, "Mode Confirmed:");
+    LCD_showString_clear_delay_1s(2, 1, "RX Mode");      
+  }
+  else if(state == 4){
+    LCD_showString(1, 1, "IF:");
+    LCD_showNum(2,1,000,3);
+    LCD_showNum(2,4,)
+    
+  }
+}

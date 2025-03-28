@@ -8,7 +8,8 @@
 //two global variables
 int Mhz =0;
 int Khz =0;
-int state = 0; // state for UART display
+int state = 0; // state for UART display // 1 -> FA 2->TX  3-> RX 4-> IF 
+
 
 void USART0_Init(void) {
     // Set baud rate registers
@@ -58,9 +59,13 @@ void ProcessCATCommand(const char *cmd) {
         // TX command: expects a parameter '1' (enable) or '0' (disable) after "TX"
         if (strlen(cmd) >= 3) {
             if (cmd[2] == '1') {
+                //set state
+                state=2;
                 PORTD |= (1 << PD3);  // Example: set PD2 high to enable TX
                 USART0_SendString("TX Enabled\r\n");
             } else if (cmd[2] == '0') {
+                //set state
+                state=3;
                 PORTD &= ~(1 << PD3); // Set PD2 low to disable TX
                 USART0_SendString("TX Disabled\r\n");
             } else {
@@ -98,6 +103,9 @@ void ProcessCATCommand(const char *cmd) {
     } else if (strncmp(cmd, "IF", 2) == 0) {
         // IF command: process IF settings.
         // Depending on your design, you might extract additional parameters.
+        
+        // set state
+        state = 4;
         USART0_SendString("IF command processed\r\n");
     } else {
         USART0_SendString("Unknown CAT command\r\n");
