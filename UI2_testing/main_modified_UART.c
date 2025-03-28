@@ -5,7 +5,7 @@
  * Created on 2025?3?7?, ??3:01
  */
 
-#define F_CPU 1000000
+// #define F_CPU 1000000
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
@@ -71,21 +71,25 @@ int main(void) {
   char* TX = "TX";
   char* RX = "RX";
 
+  unsigned int tutorial_time_counter = 0;
+
   // TIMER:
-  timer_setup();
+  // timer_setup();
 
   // UART:
   USART0_Init();
   //  For the TX command, assume PD3 controls a TX enable signal.
   //  Configure PD3 as output.
-  DDRD |= (1 << PD3);
+  // DDRD |= (1 << PD3);
 
   // ENCODER:
   encoder_setup();
   encoder_init();
-  ISR(PCINT0_vect);          // ISR for SW4A and SW4B
-  ISR(PCINT2_vect);          // ISR for SW5A and SW5B
-  ISR(TIMER0_COMPA_vector);  // ISR for TIMER0
+  ISR(PCINT0_vect);  // ISR for SW4A and SW4B
+  ISR(PCINT2_vect);  // ISR for SW5A and SW5B
+
+  // timer_setup();
+  // ISR(TIMER0_COMPA_vect);  // ISR for TIMER0
 
   // BUTTON
   button_init();
@@ -124,13 +128,26 @@ int main(void) {
         if (button1_read() || button2_read() ||
             button3_read()) {  // if any of the keys is pressed: go to TUTORIAL
           current_state = STATE_TUTORIAL;
+          LCD_Clear_screen();
         }
         break;
 
       case STATE_TUTORIAL:  // timer ISR will increment and control page_index
         if (computer_input_detected) {
           current_state = STATE_COMPUTER_MODE;
+          LCD_Clear_screen();
           break;
+        }
+
+        _delay_ms(1);
+        tutorial_time_counter++;
+        tutorial_time_counter %= 100;
+        if (!tutorial_time_counter) {
+          if (page_index == 2) {
+            page_index = 2;
+          } else {
+            page_index++;
+          }
         }
 
         if (page_index == 0) {
@@ -148,6 +165,8 @@ int main(void) {
         // 是不是被按下。如果被按下的话就可以直接离开tutorial stage来到 layer2
         if (button2_read()) {
           current_state = STATE_LAYER2_STAGE1;
+          LCD_Clear_screen();
+          page_index = 0;
           break;
         }
         break;
@@ -155,25 +174,29 @@ int main(void) {
       case STATE_LAYER2_STAGE1:  // Layer2: handle TX/RX MODE. Stage1: SELECT
         if (computer_input_detected) {
           current_state = STATE_COMPUTER_MODE;
+          LCD_Clear_screen();
           break;
         }
 
-        LCD_showString(1, 2, TX);
+        LCD_showString(1, 1, TX);
         LCD_showString(1, 11, modeselection);
         LCD_showString(2, 6, "Select Mode");
-        LCD_showString(2, 2, RX);
+        LCD_showString(2, 1, RX);
         if (button1_read()) {
           TXEN_N = 1;
           current_state = STATE_LAYER2_STAGE2;
+          LCD_Clear_screen();
         } else if (button3_read()) {
           TXEN_N = 0;
           current_state = STATE_LAYER2_STAGE2;
+          LCD_Clear_screen();
         }
         break;
 
       case STATE_LAYER2_STAGE2:  // Layer2: handle TX/RX MODE. Stage2: CONFIRM
         if (computer_input_detected) {
           current_state = STATE_COMPUTER_MODE;
+          LCD_Clear_screen();
           break;
         }
         LCD_showString(1, 1, "Mode Confirmed:");
@@ -264,8 +287,8 @@ ISR(PCINT0_vect) {
 
   if (encoder1_count >= 30) {
     encoder1_count = 30;
-  } else if (encoder1_count <= 0) {
-    encoder1_count = 0;
+  } else if (encoder1_count <= 3) {
+    encoder1_count = 3;
   }
 
   old_state_1 = new_state_1;
@@ -334,7 +357,7 @@ ISR(TIMER0_COMPA_vector) {  // count for 1 second
 
 // uart
 void handle_UART(bool computer_input_detected) {
-  USART0_Se ndString("ATmega324PB no Interface Ready\r\n");
+  USART0_SendString("ATmega324PB no Interface Ready\r\n");
   while (computer_input_detected) {
     uint8_t received = USART0_Receive();
     // Echo back the received character (optional)
