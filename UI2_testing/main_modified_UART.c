@@ -133,12 +133,12 @@ int main(void) {
  
 
   while (1) {
-    LCD_Clear_screen();
+    computer_input_detected = false; 
     switch (current_state) {
       case STATE_WAIT:
         LCD_showString(1, 1, "PUSH ANY BUTTON");
         LCD_showString(2, 1, "TO START");
-        computer_input_detected =  (PIND & (1 << PD2)) != 0;
+        computer_input_detected =  UCSR0A & (1 << UDRE);
         if (computer_input_detected) {
           current_state = STATE_COMPUTER_MODE;
           break;
@@ -272,6 +272,7 @@ int main(void) {
         break;
 
       case STATE_COMPUTER_MODE:
+        LCD_Clear_screen();
         // parse computer command
         LCD_showString(1, 1, "COMP CTRL");
         handle_UART(computer_input_detected);
