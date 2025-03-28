@@ -21,7 +21,7 @@
 
 #define TXEN_BIT PD3
 
-volatile int encoder1_count = 0; //Mhz
+volatile int encoder1_count = 3; //Mhz
 volatile int encoder2_count = 0; //Khz
 volatile unsigned char old_state_1 = 0;  // old state for encoder 1 (PA0,PA1)
 volatile unsigned char old_state_2 = 0;  // old state for encoder 2 (PA2,PA3)
@@ -61,15 +61,15 @@ int main(void) {
     //PLL
     bool enabled = true;
 	// Initialize the I2C Bus
-	//twi_init();
+	twi_init();
     //Initialize the LO
-    //si5351_init();
+    si5351_init();
     //reset PLL
-    //reset_pll();
+    reset_pll();
     // choose PLL & setup desired fvco
-    //setup_PLL(SI5351_PLL_A, 32, 0, 1); // 25 * 32 = 800 Mhz for Fvco, this does not change
-    //set_phase(90); //set port1 phase to be 90, and port 0 to be 0
-    //enable_clocks(enabled);
+    setup_PLL(SI5351_PLL_A, 32, 0, 1); // 25 * 32 = 800 Mhz for Fvco, this does not change
+    set_phase(90); //set port1 phase to be 90, and port 0 to be 0
+    enable_clocks(enabled);
 
     //Important variables
     bool user_input_detected = false;
@@ -78,11 +78,16 @@ int main(void) {
     unsigned int user_confirmed_freq_Mhz = 0;
     unsigned int user_confirmed_freq_Khz = 0;
     unsigned int PLL_freq = 0;
-    unsigned int division = 0;
+    unsigned int division = 800 / 3;
     
     while (1) {
-        LCD_showString(1, 1, "PUSH ANY BUTTON");
+        //LCD_showString(1, 1, "PUSH ANY BUTTON");
         LCD_showString(2, 1, "TO START");
+        LCD_showNum(1,1, division, 5);
+        set_phase(90);
+        setup_clock(SI5351_PLL_A, SI5351_PORT0, division, 0, 1);//800 / (80/3) =30 Mhz
+        setup_clock(SI5351_PLL_A, SI5351_PORT1, division, 0, 1);//800 / (80/3) =30 Mhz
+        enable_clocks(enabled);
 
         //User menu layers:
         //1st: Homepage -> awaiting user inputs, prompt user to push any of the three button to start inputing
@@ -166,10 +171,9 @@ int main(void) {
                 //PLL and TXEN config
 
                 //PLL
-                //reset_pll();
+                reset_pll();
                 division = (800 * 1000000) / PLL_freq;
-                //setup_clock(SI5351_PLL_A, SI5351_PORT0, division, 0, 1);//800 / (80/3) =30 Mhz
-                //setup_clock(SI5351_PLL_A, SI5351_PORT1, division, 0, 1);//800 / (80/3) =30 Mhz
+                
 
                 //TXEN pin set
                 if (TXEN_N){
@@ -212,8 +216,8 @@ ISR(PCINT0_vect)
 
     if(encoder1_count >= 30){
         encoder1_count = 30;
-    } else if (encoder1_count <= 0){
-        encoder1_count = 0;
+    } else if (encoder1_count <= 3){
+        encoder1_count = 3;
     }
     
     old_state_1 = new_state_1;
