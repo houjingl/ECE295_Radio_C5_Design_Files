@@ -16,6 +16,8 @@
 
 #define CMD_BUFFER_SIZE 64
 
+
+
 // Initialize USART0 in asynchronous mode with frame format: 
 // 1 start bit, 8 data bits, no parity, 1 stop bit.
 // (See datasheet sections 23.12 and 24.5 for details on register settings.)

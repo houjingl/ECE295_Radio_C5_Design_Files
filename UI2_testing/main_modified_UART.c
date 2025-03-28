@@ -37,6 +37,7 @@ volatile int encoder2_count = 0;         // Khz
 extern volatile int Mhz;                 // Mhz from UART
 extern volatile int Khz;                 // Khz from UART
 extern int state;                        // state for UART display
+
 char cmdBuffer[CMD_BUFFER_SIZE];         // CAT command buffer
 uint8_t index = 0;                       // Index for command buffer
 
@@ -44,6 +45,7 @@ volatile unsigned char old_state_1 = 0;  // old state for encoder 1 (PA0,PA1)
 volatile unsigned char old_state_2 = 0;  // old state for encoder 2 (PA2,PA3)
 int counter = 0;                         // counter for timer
 bool computer_input_detected = false;    // Flag for computer input
+
 
 // FSM
 typedef enum {
@@ -128,7 +130,7 @@ int main(void) {
   unsigned int PLL_freq = 0;
   unsigned int cd = 0;
 
-  computer_input_detected =  (DDRD & (1 << PD2)) != 0;
+  computer_input_detected =  (PIND & (1 << PD2)) != 0;
 
   while (1) {
     switch (current_state) {
@@ -271,6 +273,7 @@ int main(void) {
       case STATE_COMPUTER_MODE:
         // parse computer command
         handle_UART(computer_input_detected);
+        LCD_showString(1, 1, "Comp CTRL");
         if (computer_input_detected) {
           current_state = UART_DISPLAY;
         } else {
@@ -398,7 +401,6 @@ ISR(TIMER0_COMPA_vector) {  // count for 1 second
 
 // uart
 void handle_UART(bool computer_input_detected) {
-  USART0_SendString("ATmega324PB no Interface Ready\r\n");
   while (computer_input_detected) {
     uint8_t received = USART0_Receive();
     // Echo back the received character (optional)
@@ -411,6 +413,7 @@ void handle_UART(bool computer_input_detected) {
           cmdBuffer);  // 这个函数会更改TX和RX
                        // pin，以及PLL的频率，所以不需要再跳转到STATE_CONFIG_PLL_TXEN
       index = 0;  // Reset buffer for next command.
+      break;
     } else {
       // Append character to command buffer if there is room.
       if (index < CMD_BUFFER_SIZE - 1) {
