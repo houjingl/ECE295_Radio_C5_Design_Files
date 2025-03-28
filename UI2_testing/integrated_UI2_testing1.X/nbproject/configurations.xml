@@ -32,6 +32,7 @@
       <itemPath>../rotary_encoder.c</itemPath>
       <itemPath>../timer.c</itemPath>
       <itemPath>../twi.c</itemPath>
+      <itemPath>../uart_testing.c</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
