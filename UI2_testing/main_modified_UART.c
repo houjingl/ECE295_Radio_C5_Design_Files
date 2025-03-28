@@ -130,18 +130,19 @@ int main(void) {
   unsigned int PLL_freq = 0;
   unsigned int cd = 0;
 
-  computer_input_detected =  (PIND & (1 << PD2)) != 0;
+ 
 
   while (1) {
+    LCD_Clear_screen();
     switch (current_state) {
       case STATE_WAIT:
+        LCD_showString(1, 1, "PUSH ANY BUTTON");
+        LCD_showString(2, 1, "TO START");
+        computer_input_detected =  (PIND & (1 << PD2)) != 0;
         if (computer_input_detected) {
           current_state = STATE_COMPUTER_MODE;
           break;
         }
-
-        LCD_showString(1, 1, "PUSH ANY BUTTON");
-        LCD_showString(2, 1, "TO START");
         if (button1_read() || button2_read() ||
             button3_read()) {  // if any of the keys is pressed: go to TUTORIAL
           current_state = STATE_TUTORIAL;
@@ -150,11 +151,11 @@ int main(void) {
         break;
 
       case STATE_TUTORIAL:  // timer ISR will increment and control page_index
-        if (computer_input_detected) {
+        /* if (computer_input_detected) {
           current_state = STATE_COMPUTER_MODE;
           LCD_Clear_screen();
           break;
-        }
+        } */
 
         _delay_ms(1);
         tutorial_time_counter++;
@@ -189,11 +190,11 @@ int main(void) {
         break;
 
       case STATE_LAYER2_STAGE1:  // Layer2: handle TX/RX MODE. Stage1: SELECT
-        if (computer_input_detected) {
+        /*if (computer_input_detected) {
           current_state = STATE_COMPUTER_MODE;
           LCD_Clear_screen();
           break;
-        }
+        } */
 
         LCD_showString(1, 1, TX);
         LCD_showString(1, 11, modeselection);
@@ -211,11 +212,11 @@ int main(void) {
         break;
 
       case STATE_LAYER2_STAGE2:  // Layer2: handle TX/RX MODE. Stage2: CONFIRM
-        if (computer_input_detected) {
+        /* if (computer_input_detected) {
           current_state = STATE_COMPUTER_MODE;
           LCD_Clear_screen();
           break;
-        }
+        } */
         LCD_showString(1, 1, "Mode Confirmed:");
         if (TXEN_N) {
           LCD_showString_clear_delay_1s(2, 1, "RX Mode");
@@ -226,10 +227,10 @@ int main(void) {
         break;
 
       case STATE_LAYER3:  // Layer3: frequency adjustment
-        if (computer_input_detected) {
-          current_state = STATE_COMPUTER_MODE;
-          break;
-        }
+        // if (computer_input_detected) {
+        //   current_state = STATE_COMPUTER_MODE;
+        //   break;
+        // }
         LCD_showString(1, 1, frequency);
         LCD_showNum(2, 1, encoder1_count, 3);
         LCD_showString(2, 4, MHz);
@@ -272,8 +273,8 @@ int main(void) {
 
       case STATE_COMPUTER_MODE:
         // parse computer command
+        LCD_showString(1, 1, "COMP CTRL");
         handle_UART(computer_input_detected);
-        LCD_showString(1, 1, "Comp CTRL");
         if (computer_input_detected) {
           current_state = UART_DISPLAY;
         } else {
@@ -289,7 +290,7 @@ int main(void) {
           LCD_showChar(2, 7, space);
           LCD_showNum(2, 8, Khz, 3);
           LCD_showString(2, 11, KHz);
-          if (button2_read()) {
+          if (button2_read()) { // confirm
             user_confirmed_freq_Mhz = Mhz;
             user_confirmed_freq_Khz = Khz;
             PLL_freq = encoder1_count * 1000000 + encoder2_count * 1000;
@@ -302,6 +303,7 @@ int main(void) {
             LCD_showString_clear_delay_1s(1, 16, " ");
             current_state = STATE_CONFIG_PLL_TXEN;
           }
+          computer_input_detected = false; // Reset the flag to stop processing
           break;
         }
 
