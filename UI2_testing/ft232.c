@@ -5,6 +5,11 @@
 // 1 start bit, 8 data bits, no parity, 1 stop bit.
 // (See datasheet sections 23.12 and 24.5 for details on register settings.)
 
+//two global variables
+int Mhz =0;
+int Khz =0;
+int state = 0; // state for UART display
+
 void USART0_Init(void) {
     // Set baud rate registers
     UBRR0H = (unsigned char)(UBRR_VALUE >> 8);
@@ -67,12 +72,16 @@ void ProcessCATCommand(const char *cmd) {
     } else if (strncmp(cmd, "FA", 2) == 0) {
         // FA command: set or read VFO-A frequency.
         // For example, "FA014250000;" sets VFO-A to 14,250,000 Hz.
+        state = 1; // set state to 1 for FA command
         if (strlen(cmd) > 2) {
             long freq = atol(cmd + 2);
             char buffer[32];
             // In a complete design, you'd update your LO (Local Oscillator) setting here.
             sprintf(buffer, "VFO-A set to %ld Hz\r\n", freq);
             USART0_SendString(buffer);
+            // Update global variables for frequency display
+            Mhz = freq / 1000000; // Extract MHz part
+            Khz = (freq % 1000000) / 1000; // Extract kHz part
         } else {
             USART0_SendString("FA command missing frequency\r\n");
         }

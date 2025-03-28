@@ -20,6 +20,8 @@
 // 1 start bit, 8 data bits, no parity, 1 stop bit.
 // (See datasheet sections 23.12 and 24.5 for details on register settings.)
 
+// gLobal variable
+
 void USART0_Init(void);
 
 // Transmit one character via USART0.

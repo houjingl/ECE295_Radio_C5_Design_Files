@@ -22,14 +22,26 @@
 #include "timer.h"
 
 #define TXEN_BIT PD3
+#define FVCO 800000000 // 800 Mhz
+#define AD 10
+#define BD 1000000
+
 
 // global variables
+
+//encoder
 volatile int encoder1_count = 0;         // Mhz
 volatile int encoder2_count = 0;         // Khz
-volatile unsigned char old_state_1 = 0;  // old state for encoder 1 (PA0,PA1)
-volatile unsigned char old_state_2 = 0;  // old state for encoder 2 (PA2,PA3)
+
+//uart
+extern volatile int Mhz;                 // Mhz from UART
+extern volatile int Khz;                 // Khz from UART
+extern int state;                        // state for UART display
 char cmdBuffer[CMD_BUFFER_SIZE];         // CAT command buffer
 uint8_t index = 0;                       // Index for command buffer
+
+volatile unsigned char old_state_1 = 0;  // old state for encoder 1 (PA0,PA1)
+volatile unsigned char old_state_2 = 0;  // old state for encoder 2 (PA2,PA3)
 int counter = 0;                         // counter for timer
 bool computer_input_detected = false;    // Flag for computer input
 
@@ -41,7 +53,8 @@ typedef enum {
   STATE_LAYER2_STAGE2,
   STATE_LAYER3,
   STATE_CONFIG_PLL_TXEN,
-  STATE_COMPUTER_MODE
+  STATE_COMPUTER_MODE,
+  UART_DISPLAY
 } State;
 
 // user interface state machine
@@ -97,14 +110,14 @@ int main(void) {
   // PLL
   bool enabled = true;
   // Initialize the I2C Bus
-  // twi_init();
+  twi_init();
   // Initialize the LO
-  // si5351_init();
+  si5351_init();
   // reset PLL
-  // reset_pll();
+  reset_pll();
   //  choose PLL & setup desired fvco
-  // setup_PLL(SI5351_PLL_A, 32, 0, 1); // 25 * 32 = 800 Mhz for Fvco, this does
-  // not change set_phase(90); //set port1 phase to be 90, and port 0 to be 0
+  setup_PLL(SI5351_PLL_A, 32, 0, 1); // 25 * 32 = 800 Mhz for Fvco, this does
+  set_phase(90); //set port1 phase to be 90, and port 0 to be 0
   // enable_clocks(enabled);
 
   // Important variables
@@ -113,7 +126,9 @@ int main(void) {
   unsigned int user_confirmed_freq_Mhz = 0;
   unsigned int user_confirmed_freq_Khz = 0;
   unsigned int PLL_freq = 0;
-  unsigned int division = 0;
+  unsigned int cd = 0;
+
+  computer_input_detected =  (DDRD & (1 << PD2)) != 0;
 
   while (1) {
     switch (current_state) {
@@ -141,7 +156,7 @@ int main(void) {
 
         _delay_ms(1);
         tutorial_time_counter++;
-        tutorial_time_counter %= 100;
+        tutorial_time_counter %= 50;
         if (!tutorial_time_counter) {
           if (page_index == 2) {
             page_index = 2;
@@ -238,9 +253,11 @@ int main(void) {
         // DO NOT deal with computer input when configure PLL and TXEN
 
         // configure PLL
-        division = (800 * 1000000) / PLL_freq;
-        // setup_clock(SI5351_PLL_A, SI5351_PORT0, division, 0, 1);
-        // setup_clock(SI5351_PLL_A, SI5351_PORT1, division, 0, 1);
+        cd = BD / ((FVCO/PLL_freq) - AD);
+        setup_clock(SI5351_PLL_A, SI5351_PORT0, AD, BD, cd);
+        setup_clock(SI5351_PLL_A, SI5351_PORT1, AD, BD, cd);
+        enable_clocks(enabled);
+
 
         // configure TX/RX mode
         if (TXEN_N) {
@@ -255,11 +272,35 @@ int main(void) {
         // parse computer command
         handle_UART(computer_input_detected);
         if (computer_input_detected) {
-          current_state = STATE_COMPUTER_MODE;
+          current_state = UART_DISPLAY;
         } else {
           current_state = STATE_WAIT;
         }
         break;
+
+      case UART_DISPLAY:
+        if(state == 1){ //FA
+          LCD_showString(1, 1, frequency);
+          LCD_showNum(2, 1, Mhz, 3);
+          LCD_showString(2, 4, MHz);
+          LCD_showChar(2, 7, space);
+          LCD_showNum(2, 8, Khz, 3);
+          LCD_showString(2, 11, KHz);
+          if (button2_read()) {
+            user_confirmed_freq_Mhz = Mhz;
+            user_confirmed_freq_Khz = Khz;
+            PLL_freq = encoder1_count * 1000000 + encoder2_count * 1000;
+            LCD_showString(1, 1, "Confirmed Freq:");
+            LCD_showNum(2, 1, Mhz, 3);
+            LCD_showString(2, 4, MHz);
+            LCD_showChar(2, 7, space);
+            LCD_showNum(2, 8, Khz, 3);
+            LCD_showString(2, 11, KHz);
+            LCD_showString_clear_delay_1s(1, 16, " ");
+            current_state = STATE_CONFIG_PLL_TXEN;
+          }
+          break;
+        }
 
       default:
         current_state = STATE_WAIT;

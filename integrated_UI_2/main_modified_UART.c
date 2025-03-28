@@ -334,7 +334,7 @@ ISR(TIMER0_COMPA_vector) {  // count for 1 second
 
 // uart
 void handle_UART(bool computer_input_detected) {
-  USART0_Se ndString("ATmega324PB no Interface Ready\r\n");
+  USART0_SendString("ATmega324PB no Interface Ready\r\n");
   while (computer_input_detected) {
     uint8_t received = USART0_Receive();
     // Echo back the received character (optional)

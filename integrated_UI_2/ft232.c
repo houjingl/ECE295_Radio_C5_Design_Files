@@ -1,9 +1,13 @@
 #include "ft232.h"
+#include "lcd1602.h"
 
 
 // Initialize USART0 in asynchronous mode with frame format: 
 // 1 start bit, 8 data bits, no parity, 1 stop bit.
 // (See datasheet sections 23.12 and 24.5 for details on register settings.)
+
+int Mhz =0;
+int Khz =0;
 
 void USART0_Init(void) {
     // Set baud rate registers
@@ -11,7 +15,7 @@ void USART0_Init(void) {
     UBRR0L = (unsigned char)UBRR_VALUE;
     
     // Clear UCSR0A (normal speed mode, no multi-processor mode)
-    UCSR0A = (1<<U2X);
+    UCSR0A = (1<<U2X); // 0
     
     // Enable receiver and transmitter; 
     // You can later add RX complete interrupts if desired.
@@ -53,8 +57,10 @@ void ProcessCATCommand(const char *cmd) {
         // TX command: expects a parameter '1' (enable) or '0' (disable) after "TX"
         if (strlen(cmd) >= 3) {
             if (cmd[2] == '1') {
-                PORTD |= (1 << PD3);  // Example: set PD2 high to enable TX
+                PORTD |= (1 << PD3);  // Example: set PD3 high to enable TX
                 USART0_SendString("TX Enabled\r\n");
+                // LCD set
+                LCD_showString(1, 1, "TX Enabled");
             } else if (cmd[2] == '0') {
                 PORTD &= ~(1 << PD3); // Set PD2 low to disable TX
                 USART0_SendString("TX Disabled\r\n");
@@ -73,6 +79,9 @@ void ProcessCATCommand(const char *cmd) {
             // In a complete design, you'd update your LO (Local Oscillator) setting here.
             sprintf(buffer, "VFO-A set to %ld Hz\r\n", freq);
             USART0_SendString(buffer);
+            // pass to the lcd screen about the frequency
+            Mhz = freq / 1000000;
+            Khz = (freq % 1000000) / 1000;
         } else {
             USART0_SendString("FA command missing frequency\r\n");
         }
@@ -94,3 +103,5 @@ void ProcessCATCommand(const char *cmd) {
         USART0_SendString("Unknown CAT command\r\n");
     }
 }
+
+void 
