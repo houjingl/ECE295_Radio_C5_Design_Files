@@ -153,6 +153,7 @@ int main(void) {
           page_index = 0;
           tutorial_time_counter = 0;
           LCD_Clear_screen();
+          break;
         }
 
         if(knobL_read() || knobR_read()){
@@ -165,12 +166,6 @@ int main(void) {
         break;
 
       case STATE_TUTORIAL:  // timer ISR will increment and control page_index
-        /* if (computer_input_detected) {
-          current_state = STATE_COMPUTER_MODE;
-          LCD_Clear_screen();
-          break;
-        } */
-
         _delay_ms(1);
         tutorial_time_counter++;
         tutorial_time_counter %= 50;
@@ -202,11 +197,6 @@ int main(void) {
         break;
 
       case STATE_LAYER2_STAGE1:  // Layer2: handle TX/RX MODE. Stage1: SELECT
-        if (computer_input_detected) {
-          current_state = STATE_COMPUTER_MODE;
-          break;
-        }
-
         LCD_showString(1, 2, TX);
         LCD_showString(1, 11, modeselection);
         LCD_showString(2, 6, "Select Mode");
@@ -231,10 +221,6 @@ int main(void) {
         break;
 
       case STATE_LAYER2_STAGE2:  // Layer2: handle TX/RX MODE. Stage2: CONFIRM
-        if (computer_input_detected) {
-          current_state = STATE_COMPUTER_MODE;
-          break;
-        }
         LCD_showString(1, 1, "Mode Confirmed:");
         if (TXEN_N) {
           LCD_showString_clear_delay_1s(2, 1, "RX Mode");
@@ -245,10 +231,6 @@ int main(void) {
         break;
 
       case STATE_LAYER3:  // Layer3: frequency adjustment
-        if (computer_input_detected) {
-          current_state = STATE_COMPUTER_MODE;
-          break;
-        }
         LCD_showString(1, 1, frequency);
         LCD_showNum(2, 1, encoder1_count, 3);
         LCD_showString(2, 4, MHz);
@@ -287,8 +269,7 @@ int main(void) {
         setup_clock(SI5351_PLL_A, SI5351_PORT0, 10, 100000, cd);
         setup_clock(SI5351_PLL_A, SI5351_PORT1,10, 100000, cd );
         enable_clocks(enabled);
-
-
+        
         // configure TX/RX mode
         if (TXEN_N) {
           PORTD |= (1 << TXEN_BIT);
@@ -312,6 +293,7 @@ int main(void) {
 
       case UART_DISPLAY:
         comp_display();
+        computer_input_detected = false;
         break;
 
       default:
@@ -435,7 +417,7 @@ void comp_display(){
         LCD_showString_clear_delay_1s(1, 16, " ");
         current_state = STATE_CONFIG_PLL_TXEN;
       }
-      computer_input_detected = false; // Reset the flag to stop processing
+      // computer_input_detected = false; // Reset the flag to stop processing
       break;
     }
     else if(state == 2){ //TX 
@@ -466,3 +448,4 @@ void comp_display(){
   }
 
 }
+
