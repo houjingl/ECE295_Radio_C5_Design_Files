@@ -9,6 +9,7 @@
 int Mhz =0;
 int Khz =0;
 int state = 0; // state for UART display // 1 -> FA 2->TX  3-> RX 4-> IF 
+int IF_freq = 0; // IF frequency
 
 
 void USART0_Init(void) {
@@ -87,6 +88,7 @@ void ProcessCATCommand(const char *cmd) {
             // Update global variables for frequency display
             Mhz = freq / 1000000; // Extract MHz part
             Khz = (freq % 1000000) / 1000; // Extract kHz part
+            IF_freq = freq; // Example: calculate IF frequency
         } else {
             USART0_SendString("FA command missing frequency\r\n");
         }
