@@ -278,7 +278,7 @@ int main(void) {
         cd = 0;
         double FVCO_PLLfreqRatio = 0.0;
         // choose PLL & setup desired fvco
-        /*SET PHASE*/ // new_set_phase needed!
+        /*SET PHASE*/
         set_phase(800 / user_confirmed_freq_Mhz);
         /***********/
         FVCO_PLLfreqRatio = 8000 / PLL_freq;

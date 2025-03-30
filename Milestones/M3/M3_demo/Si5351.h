@@ -121,7 +121,7 @@ typedef enum {
 } si5351RDiv_t;
 
 void si5351_init();
-// void set_phase(word mult);
+void set_phase(word mult);
 void setup_PLL(plldev_t pll, byte mult, uint32_t num, uint32_t denom);
 void setup_clock(plldev_t pll, byte port, uint32_t div, uint32_t num,
                  uint32_t denom);
@@ -133,7 +133,7 @@ void setup_rdiv(byte port, byte rdiv);
 void reset_pll();
 
 // helper functions for set_phase:
-word calculate_mult(int desired_phase_offset_deg, int Fvco, int F_desired);
-void set_phase_helper(word mult);
-void set_phase(int desired_phase_offset_deg, int Fvco, int F_desired);
+// word calculate_mult(int desired_phase_offset_deg, int Fvco, int F_desired);
+// void set_phase_helper(word mult);
+// void set_phase(int desired_phase_offset_deg, int Fvco, int F_desired);
 #endif
