@@ -1,13 +1,16 @@
 #include "ft232.h"
-#include "lcd1602.h"
 
 
 // Initialize USART0 in asynchronous mode with frame format: 
 // 1 start bit, 8 data bits, no parity, 1 stop bit.
 // (See datasheet sections 23.12 and 24.5 for details on register settings.)
 
+//two global variables
 int Mhz =0;
 int Khz =0;
+int state = 0; // state for UART display // 1 -> FA 2->TX  3-> RX 4-> IF 
+int IF_freq = 0; // IF frequency
+
 
 void USART0_Init(void) {
     // Set baud rate registers
@@ -15,7 +18,7 @@ void USART0_Init(void) {
     UBRR0L = (unsigned char)UBRR_VALUE;
     
     // Clear UCSR0A (normal speed mode, no multi-processor mode)
-    UCSR0A = (1<<U2X); // 0
+    UCSR0A = (1<<U2X);
     
     // Enable receiver and transmitter; 
     // You can later add RX complete interrupts if desired.
@@ -57,11 +60,13 @@ void ProcessCATCommand(const char *cmd) {
         // TX command: expects a parameter '1' (enable) or '0' (disable) after "TX"
         if (strlen(cmd) >= 3) {
             if (cmd[2] == '1') {
-                PORTD |= (1 << PD3);  // Example: set PD3 high to enable TX
+                //set state
+                state=2;
+                PORTD |= (1 << PD3);  // Example: set PD2 high to enable TX
                 USART0_SendString("TX Enabled\r\n");
-                // LCD set
-                LCD_showString(1, 1, "TX Enabled");
             } else if (cmd[2] == '0') {
+                //set state
+                state=3;
                 PORTD &= ~(1 << PD3); // Set PD2 low to disable TX
                 USART0_SendString("TX Disabled\r\n");
             } else {
@@ -73,15 +78,17 @@ void ProcessCATCommand(const char *cmd) {
     } else if (strncmp(cmd, "FA", 2) == 0) {
         // FA command: set or read VFO-A frequency.
         // For example, "FA014250000;" sets VFO-A to 14,250,000 Hz.
+        state = 1; // set state to 1 for FA command
         if (strlen(cmd) > 2) {
             long freq = atol(cmd + 2);
             char buffer[32];
             // In a complete design, you'd update your LO (Local Oscillator) setting here.
             sprintf(buffer, "VFO-A set to %ld Hz\r\n", freq);
             USART0_SendString(buffer);
-            // pass to the lcd screen about the frequency
-            Mhz = freq / 1000000;
-            Khz = (freq % 1000000) / 1000;
+            // Update global variables for frequency display
+            Mhz = freq / 1000000; // Extract MHz part
+            Khz = (freq % 1000000) / 1000; // Extract kHz part
+            IF_freq = freq; // Example: calculate IF frequency
         } else {
             USART0_SendString("FA command missing frequency\r\n");
         }
@@ -98,6 +105,9 @@ void ProcessCATCommand(const char *cmd) {
     } else if (strncmp(cmd, "IF", 2) == 0) {
         // IF command: process IF settings.
         // Depending on your design, you might extract additional parameters.
+        
+        // set state
+        state = 4;
         USART0_SendString("IF command processed\r\n");
     } else {
         USART0_SendString("Unknown CAT command\r\n");

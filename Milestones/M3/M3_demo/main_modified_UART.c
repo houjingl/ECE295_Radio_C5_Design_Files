@@ -22,6 +22,9 @@
 // #include "timer.h"
 
 #define TXEN_BIT PD3
+// #define FVCO 800000000 // 800 Mhz
+// #define AD 10
+// #define BD 1000000
 
 
 // global variables
@@ -42,7 +45,8 @@ typedef enum {
   STATE_LAYER2_STAGE2,
   STATE_LAYER3,
   STATE_CONFIG_PLL_TXEN,
-  STATE_COMPUTER_MODE
+  STATE_COMPUTER_MODE,
+  UART_DISPLAY
 } State;
 
 // user interface state machine
@@ -52,6 +56,24 @@ State current_state = STATE_WAIT;  // set initial state to STATE_WAIT
 // additional function
 void handle_UART(bool computer_input_detected);
 void encoder_init(void);
+
+// LCD:
+char* homepageMessage = "PUSH ANY BUTTONTO START";
+char* frequency = "Frequency:";
+char* MHz = "MHz";
+char* KHz = "KHz";
+char space = ' ';
+char* modeselection = "Please";
+char* TX = "TX";
+char* RX = "RX";
+
+
+  // Important variables
+  bool user_input_detected = false;
+  unsigned char TXEN_N = 0;
+  volatile int user_confirmed_freq_Mhz = 0;
+  volatile int user_confirmed_freq_Khz = 0;
+  volatile int PLL_freq = 0;
 
 // main
 int main(void) {
@@ -66,37 +88,25 @@ int main(void) {
   // LCD
   LCD_regInit();
   LCD_Init();
-  char* homepageMessage = "PUSH ANY BUTTONTO START";
-  char* frequency = "Frequency:";
-  char* MHz = "MHz";
-  char* KHz = "KHz";
-  char space = ' ';
-  char* modeselection = "Please";
-  char* TX = "TX";
-  char* RX = "RX";
-
-  // TIMER:
-  // timer_setup();
 
   // UART:
   USART0_Init();
   //  For the TX command, assume PD3 controls a TX enable signal.
   //  Configure PD3 as output.
   DDRD |= (1 << PD3);
-  volatile double cd = 0;
 
   // ENCODER:
   encoder_setup();
   encoder_init();
   ISR(PCINT0_vect);  // ISR for SW4A and SW4B
   ISR(PCINT2_vect);  // ISR for SW5A and SW5B
-  // ISR(TIMER0_COMPA_vector);  // ISR for TIMER0
 
   // BUTTON
   button_init();
 
   // PLL
   bool enabled = true;
+  volatile double cd = 0;
   // Initialize the I2C Bus
   twi_init();
   // Initialize the LO
@@ -108,12 +118,6 @@ int main(void) {
   set_phase(90);  // initial set
   // enable_clocks(enabled);
 
-  // Important variables
-  bool user_input_detected = false;
-  unsigned char TXEN_N = 0;
-  volatile int user_confirmed_freq_Mhz = 0;
-  volatile int user_confirmed_freq_Khz = 0;
-  volatile int PLL_freq = 0;
 
   while (1) {
     switch (current_state) {
@@ -274,7 +278,7 @@ int main(void) {
         cd = 0;
         double FVCO_PLLfreqRatio = 0.0;
         // choose PLL & setup desired fvco
-        /*SET PHASE*/
+        /*SET PHASE*/ // new_set_phase needed!
         set_phase(800 / user_confirmed_freq_Mhz);
         /***********/
         FVCO_PLLfreqRatio = 8000 / PLL_freq;
@@ -294,14 +298,20 @@ int main(void) {
         current_state = STATE_WAIT;
         break;
 
-      case STATE_COMPUTER_MODE:
+        case STATE_COMPUTER_MODE:
+        LCD_Clear_screen();
         // parse computer command
+        LCD_showString(1, 1, "COMP CTRL");
         handle_UART(computer_input_detected);
         if (computer_input_detected) {
-          current_state = STATE_COMPUTER_MODE;
+          current_state = UART_DISPLAY;
         } else {
           current_state = STATE_WAIT;
         }
+        break;
+
+      case UART_DISPLAY:
+        comp_display();
         break;
 
       default:
@@ -375,32 +385,8 @@ void encoder_init() {
   old_state_2 = (initA2 << 1) | initB2;
 }
 
-// Interrupt for Timer
-// ISR(TIMER0_COMPA_vector) {  // count for 1 second
-//   // counter = (counter + 1) % 1000;
-//   // if (counter == 999) {
-//   // 等待1s
-//   if (counter != 999) {
-//     counter++;
-//     return;
-//   } else {
-//     counter = 0;
-//   }
-
-//   // 1s到了
-//   // do something
-//   if (current_state != STATE_TUTORIAL) {
-//     page_index = 0;
-//   } else if (page_index == 2) {
-//     page_index = 2;
-//   } else {
-//     page_index++;
-//   }
-// }
-
 // uart
 void handle_UART(bool computer_input_detected) {
-  USART0_SendString("ATmega324PB no Interface Ready\r\n");
   while (computer_input_detected) {
     uint8_t received = USART0_Receive();
     // Echo back the received character (optional)
@@ -413,6 +399,7 @@ void handle_UART(bool computer_input_detected) {
           cmdBuffer);  // 这个函数会更改TX和RX
                        // pin，以及PLL的频率，所以不需要再跳转到STATE_CONFIG_PLL_TXEN
       index = 0;  // Reset buffer for next command.
+      break;
     } else {
       // Append character to command buffer if there is room.
       if (index < CMD_BUFFER_SIZE - 1) {
@@ -424,4 +411,58 @@ void handle_UART(bool computer_input_detected) {
       }
     }
   }
+}
+
+void comp_display(){
+  while(1){
+    if(state == 1){ //FA
+      LCD_showString(1, 1, frequency);
+      LCD_showNum(2, 1, Mhz, 3);
+      LCD_showString(2, 4, MHz);
+      LCD_showChar(2, 7, space);
+      LCD_showNum(2, 8, Khz, 3);
+      LCD_showString(2, 11, KHz);
+      if (button2_read()) { // confirm
+        user_confirmed_freq_Mhz = Mhz;
+        user_confirmed_freq_Khz = Khz;
+        PLL_freq = encoder1_count * 1000000 + encoder2_count * 1000;
+        LCD_showString(1, 1, "Confirmed Freq:");
+        LCD_showNum(2, 1, Mhz, 3);
+        LCD_showString(2, 4, MHz);
+        LCD_showChar(2, 7, space);
+        LCD_showNum(2, 8, Khz, 3);
+        LCD_showString(2, 11, KHz);
+        LCD_showString_clear_delay_1s(1, 16, " ");
+        current_state = STATE_CONFIG_PLL_TXEN;
+      }
+      computer_input_detected = false; // Reset the flag to stop processing
+      break;
+    }
+    else if(state == 2){ //TX 
+      LCD_showString(1, 1, "Mode Confirmed:");
+      LCD_showString_clear_delay_1s(2, 1, "TX Mode"); 
+      TXEN_N=0;
+      _delay_ms(100);
+      current_state = STATE_WAIT; 
+      break;
+    }
+    else if(state == 3){ //RX
+      LCD_showString(1, 1, "Mode Confirmed:");
+      LCD_showString_clear_delay_1s(2, 1, "RX Mode");   
+      TXEN_N=1;
+      _delay_ms(100);   
+      current_state = STATE_WAIT; 
+      break;
+    }
+    else if(state == 4){ //IF 未完成
+      LCD_showString(1, 1, "IF:");
+      LCD_showNum(2,1,000,3);
+      LCD_showNum(2,4,freq,9);
+      LCD_showNum(2,13,000,3);
+      _delay_ms(100);   
+      current_state = STATE_WAIT; 
+      break;
+    }
+  }
+
 }
