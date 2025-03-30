@@ -30,6 +30,9 @@ Figure 8),
  */
 
 #define F_CPU 1000000
+#define FVCO 800000000
+#define AD 10
+#define BD 100000
 
 #include <avr/io.h>
 #include <stdio.h>
@@ -52,10 +55,19 @@ int main(void)
 	//TODO: Output a 10 MHz frequency using the Si5351.c commands. Also, you must complete the write function in Si5351.c.
     //reset PLL
     reset_pll();
+    int PLL_freq = 80; //8000000 / 100000 800000000 / 1000000
+    int cd = 0;
+    double FVCO_PLLfreqRatio = 0.0;
     // choose PLL & setup desired fvco
-    setup_PLL(SI5351_PLL_A, 32, 0, 1); // 25 * 32 = 800 Mhz for Fvco, this does not change
-    setup_clock(SI5351_PLL_A, SI5351_PORT0, 80, 0, 1);//800 / 80 = 10 Mhz
-    enable_clocks(enabled);
+     setup_PLL(SI5351_PLL_A, 32, 0, 1);  // 25 * 32 = 800 Mhz for Fvco, this does
+
+    FVCO_PLLfreqRatio = 8000 / PLL_freq;
+    double dummy = FVCO_PLLfreqRatio - AD;
+    cd = 100000.0 / dummy;
+        setup_clock(SI5351_PLL_A, SI5351_PORT0, 10, 100000, cd);
+        setup_clock(SI5351_PLL_A, SI5351_PORT1,10, 100000, cd );
+        enable_clocks(enabled);
+
     
     
 	while(1)

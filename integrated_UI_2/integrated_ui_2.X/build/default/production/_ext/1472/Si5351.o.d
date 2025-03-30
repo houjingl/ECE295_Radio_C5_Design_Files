@@ -12,7 +12,7 @@ build/default/production/_ext/1472/Si5351.o.d \
  c:\program\ files\microchip\xc8\v3.00\avr\avr\include\math.h ../twi.h \
  c:\program\ files\microchip\xc8\v3.00\avr\avr\include\avr\io.h \
  c:\program\ files\microchip\xc8\v3.00\avr\avr\include\avr\sfr_defs.h \
- C:/Program\ Files/Microchip/MPLABX/v6.25/packs/Microchip/ATmega_DFP/3.3.279/xc8/avr/include/avr/iom324pb.h \
+ C:/Program\ Files/Microchip/xc8/v3.00/dfp/xc8/avr/include/avr/iom324pb.h \
  c:\program\ files\microchip\xc8\v3.00\avr\avr\include\avr\portpins.h \
  c:\program\ files\microchip\xc8\v3.00\avr\avr\include\avr\common.h \
  c:\program\ files\microchip\xc8\v3.00\avr\avr\include\avr\fuse.h \
@@ -46,7 +46,7 @@ c:\program\ files\microchip\xc8\v3.00\avr\avr\include\avr\io.h:
 
 c:\program\ files\microchip\xc8\v3.00\avr\avr\include\avr\sfr_defs.h:
 
-C:/Program\ Files/Microchip/MPLABX/v6.25/packs/Microchip/ATmega_DFP/3.3.279/xc8/avr/include/avr/iom324pb.h:
+C:/Program\ Files/Microchip/xc8/v3.00/dfp/xc8/avr/include/avr/iom324pb.h:
 
 c:\program\ files\microchip\xc8\v3.00\avr\avr\include\avr\portpins.h:
 

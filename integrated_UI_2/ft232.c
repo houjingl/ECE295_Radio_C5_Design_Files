@@ -103,5 +103,3 @@ void ProcessCATCommand(const char *cmd) {
         USART0_SendString("Unknown CAT command\r\n");
     }
 }
-
-void 

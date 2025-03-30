@@ -30,7 +30,6 @@
       <itemPath>../ft232.c</itemPath>
       <itemPath>../lcd1602.c</itemPath>
       <itemPath>../main_modified_UART.c</itemPath>
-      <itemPath>../main_modified_timer.c</itemPath>
       <itemPath>../rotary_encoder.c</itemPath>
       <itemPath>../timer.c</itemPath>
       <itemPath>../twi.c</itemPath>

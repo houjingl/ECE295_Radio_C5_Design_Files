@@ -19,9 +19,10 @@
 #include "ft232.h"
 #include "lcd1602.h"
 #include "rotary_encoder.h"
-#include "timer.h"
+// #include "timer.h"
 
 #define TXEN_BIT PD3
+
 
 // global variables
 volatile int encoder1_count = 0;         // Mhz
@@ -59,6 +60,9 @@ int main(void) {
   DDRD |= (1 << TXEN_BIT);
   PORTD &= ~(1 << TXEN_BIT);  // default TXEN = 0 -> TX mode
 
+  //TUTORIAL
+  unsigned int tutorial_time_counter = 0;
+  
   // LCD
   LCD_regInit();
   LCD_Init();
@@ -72,20 +76,21 @@ int main(void) {
   char* RX = "RX";
 
   // TIMER:
-  timer_setup();
+  // timer_setup();
 
   // UART:
   USART0_Init();
   //  For the TX command, assume PD3 controls a TX enable signal.
   //  Configure PD3 as output.
   DDRD |= (1 << PD3);
+  volatile double cd = 0;
 
   // ENCODER:
   encoder_setup();
   encoder_init();
-  ISR(PCINT0_vect);          // ISR for SW4A and SW4B
-  ISR(PCINT2_vect);          // ISR for SW5A and SW5B
-  ISR(TIMER0_COMPA_vector);  // ISR for TIMER0
+  ISR(PCINT0_vect);  // ISR for SW4A and SW4B
+  ISR(PCINT2_vect);  // ISR for SW5A and SW5B
+  // ISR(TIMER0_COMPA_vector);  // ISR for TIMER0
 
   // BUTTON
   button_init();
@@ -93,23 +98,25 @@ int main(void) {
   // PLL
   bool enabled = true;
   // Initialize the I2C Bus
-  // twi_init();
+  twi_init();
   // Initialize the LO
-  // si5351_init();
+  si5351_init();
   // reset PLL
-  // reset_pll();
+  reset_pll();
   //  choose PLL & setup desired fvco
-  // setup_PLL(SI5351_PLL_A, 32, 0, 1); // 25 * 32 = 800 Mhz for Fvco, this does
-  // not change set_phase(90); //set port1 phase to be 90, and port 0 to be 0
+  setup_PLL(SI5351_PLL_A, 32, 0, 1);  // 25 * 32 = 800 Mhz for Fvco, this does
+  set_phase(90);  // set port1 phase to be 90, and port 0 to be 0
   // enable_clocks(enabled);
 
   // Important variables
   bool user_input_detected = false;
   unsigned char TXEN_N = 0;
-  unsigned int user_confirmed_freq_Mhz = 0;
-  unsigned int user_confirmed_freq_Khz = 0;
-  unsigned int PLL_freq = 0;
-  unsigned int division = 0;
+  volatile int user_confirmed_freq_Mhz = 0;
+  volatile int user_confirmed_freq_Khz = 0;
+  volatile int PLL_freq = 0;
+  volatile int FVCO = 80000;
+  volatile int BD = 100000;
+  volatile int AD = 10;
 
   while (1) {
     switch (current_state) {
@@ -118,19 +125,34 @@ int main(void) {
           current_state = STATE_COMPUTER_MODE;
           break;
         }
-
-        LCD_showString(1, 1, "PUSH ANY BUTTON");
-        LCD_showString(2, 1, "TO START");
+        LCD_showNum(1, 1, (int)cd, 6);
+        //LCD_showNum(2, 1, BD, 7);
+        
+        //LCD_showString(1, 1, "PUSH ANY BUTTON");
+        //LCD_showString(2, 1, "TO START");
         if (button1_read() || button2_read() ||
             button3_read()) {  // if any of the keys is pressed: go to TUTORIAL
           current_state = STATE_TUTORIAL;
+          LCD_Clear_screen();
         }
         break;
 
       case STATE_TUTORIAL:  // timer ISR will increment and control page_index
-        if (computer_input_detected) {
+        /* if (computer_input_detected) {
           current_state = STATE_COMPUTER_MODE;
+          LCD_Clear_screen();
           break;
+        } */
+
+        _delay_ms(1);
+        tutorial_time_counter++;
+        tutorial_time_counter %= 50;
+        if (!tutorial_time_counter) {
+          if (page_index == 2) {
+            page_index = 2;
+          } else {
+            page_index++;
+          }
         }
 
         if (page_index == 0) {
@@ -148,6 +170,8 @@ int main(void) {
         // 是不是被按下。如果被按下的话就可以直接离开tutorial stage来到 layer2
         if (button2_read()) {
           current_state = STATE_LAYER2_STAGE1;
+          LCD_Clear_screen();
+          page_index = 0;
           break;
         }
         break;
@@ -165,9 +189,11 @@ int main(void) {
         if (button1_read()) {
           TXEN_N = 1;
           current_state = STATE_LAYER2_STAGE2;
+          LCD_Clear_screen();
         } else if (button3_read()) {
           TXEN_N = 0;
           current_state = STATE_LAYER2_STAGE2;
+          LCD_Clear_screen();
         }
         break;
 
@@ -199,7 +225,16 @@ int main(void) {
         if (button2_read()) {
           user_confirmed_freq_Mhz = encoder1_count;
           user_confirmed_freq_Khz = encoder2_count;
-          PLL_freq = encoder1_count * 1000000 + encoder2_count * 1000;
+          /*
+          for (int i = 0; i < user_confirmed_freq_Mhz; i ++){
+           PLL_freq += 1000000;   
+          }
+          for (int i = 0; i < user_confirmed_freq_Khz; i ++){
+           PLL_freq += 1000;   
+          }
+          */
+          user_confirmed_freq_Khz = 0;
+          PLL_freq = user_confirmed_freq_Mhz * 10 + user_confirmed_freq_Khz;
           LCD_showString(1, 1, "Confirmed Freq:");
           LCD_showNum(2, 1, user_confirmed_freq_Mhz, 3);
           LCD_showString(2, 4, MHz);
@@ -213,11 +248,19 @@ int main(void) {
 
       case STATE_CONFIG_PLL_TXEN:  // configure PLL and TXEN.
         // DO NOT deal with computer input when configure PLL and TXEN
+        reset_pll();
+        //PLL_freq = 30; //8000000 / 100000 800000000 / 1000000
+        cd = 0;
+        double FVCO_PLLfreqRatio = 0.0;
+        // choose PLL & setup desired fvco
 
-        // configure PLL
-        division = (800 * 1000000) / PLL_freq;
-        // setup_clock(SI5351_PLL_A, SI5351_PORT0, division, 0, 1);
-        // setup_clock(SI5351_PLL_A, SI5351_PORT1, division, 0, 1);
+        FVCO_PLLfreqRatio = 8000 / PLL_freq;
+        double dummy = FVCO_PLLfreqRatio - 10;
+        cd = 100000.0 / dummy;
+        setup_clock(SI5351_PLL_A, SI5351_PORT0, 10, 100000, cd);
+        setup_clock(SI5351_PLL_A, SI5351_PORT1,10, 100000, cd );
+        enable_clocks(enabled);
+
 
         // configure TX/RX mode
         if (TXEN_N) {
@@ -264,8 +307,8 @@ ISR(PCINT0_vect) {
 
   if (encoder1_count >= 30) {
     encoder1_count = 30;
-  } else if (encoder1_count <= 0) {
-    encoder1_count = 0;
+  } else if (encoder1_count <= 3) {
+    encoder1_count = 3;
   }
 
   old_state_1 = new_state_1;
@@ -310,27 +353,27 @@ void encoder_init() {
 }
 
 // Interrupt for Timer
-ISR(TIMER0_COMPA_vector) {  // count for 1 second
-  // counter = (counter + 1) % 1000;
-  // if (counter == 999) {
-  // 等待1s
-  if (counter != 999) {
-    counter++;
-    return;
-  } else {
-    counter = 0;
-  }
+// ISR(TIMER0_COMPA_vector) {  // count for 1 second
+//   // counter = (counter + 1) % 1000;
+//   // if (counter == 999) {
+//   // 等待1s
+//   if (counter != 999) {
+//     counter++;
+//     return;
+//   } else {
+//     counter = 0;
+//   }
 
-  // 1s到了
-  // do something
-  if (current_state != STATE_TUTORIAL) {
-    page_index = 0;
-  } else if (page_index == 2) {
-    page_index = 2;
-  } else {
-    page_index++;
-  }
-}
+//   // 1s到了
+//   // do something
+//   if (current_state != STATE_TUTORIAL) {
+//     page_index = 0;
+//   } else if (page_index == 2) {
+//     page_index = 2;
+//   } else {
+//     page_index++;
+//   }
+// }
 
 // uart
 void handle_UART(bool computer_input_detected) {
