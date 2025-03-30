@@ -114,9 +114,6 @@ int main(void) {
   volatile int user_confirmed_freq_Mhz = 0;
   volatile int user_confirmed_freq_Khz = 0;
   volatile int PLL_freq = 0;
-  volatile int FVCO = 80000;
-  volatile int BD = 100000;
-  volatile int AD = 10;
 
   while (1) {
     switch (current_state) {
@@ -125,11 +122,26 @@ int main(void) {
           current_state = STATE_COMPUTER_MODE;
           break;
         }
-        LCD_showNum(1, 1, (int)cd, 6);
-        //LCD_showNum(2, 1, BD, 7);
+
+        _delay_ms(1);
+        tutorial_time_counter++;
+        tutorial_time_counter %= 50;
+        if (!tutorial_time_counter) {
+          if (page_index > 1) {
+            page_index = 0;
+          } else {
+            page_index++;
+          }
+        }
+
+        if (page_index == 0) {
+          LCD_showString(1, 1, "PUSH ANY BUTTON");
+          LCD_showString(2, 1, "TO START");
+        } else if (page_index == 1) {
+          LCD_showString(1, 1, "COMPUTER CTRL");
+          LCD_showString(2, 1, "PUSH ANY KNOB");
+        }
         
-        //LCD_showString(1, 1, "PUSH ANY BUTTON");
-        //LCD_showString(2, 1, "TO START");
         if (button1_read() || button2_read() ||
             button3_read()) {  // if any of the keys is pressed: go to TUTORIAL
           current_state = STATE_TUTORIAL;
@@ -186,12 +198,20 @@ int main(void) {
         LCD_showString(1, 11, modeselection);
         LCD_showString(2, 6, "Select Mode");
         LCD_showString(2, 2, RX);
-        if (button1_read()) {
-          TXEN_N = 1;
-          current_state = STATE_LAYER2_STAGE2;
+
+        if (button1_read()){
           LCD_Clear_screen();
-        } else if (button3_read()) {
+          TXEN_N = 1;
+          LCD_showString(1,1, "RX Mode is");
+          LCD_showString_clear_delay_1s(2, 1, "selected");
+        } else if (button3_read()){
+          LCD_Clear_screen();
           TXEN_N = 0;
+          LCD_showString(1, 1, "TX Mode is");
+          LCD_showString_clear_delay_1s(2, 1, "selected");
+        }
+
+        if (button2_read()) {
           current_state = STATE_LAYER2_STAGE2;
           LCD_Clear_screen();
         }
@@ -225,16 +245,9 @@ int main(void) {
         if (button2_read()) {
           user_confirmed_freq_Mhz = encoder1_count;
           user_confirmed_freq_Khz = encoder2_count;
-          /*
-          for (int i = 0; i < user_confirmed_freq_Mhz; i ++){
-           PLL_freq += 1000000;   
-          }
-          for (int i = 0; i < user_confirmed_freq_Khz; i ++){
-           PLL_freq += 1000;   
-          }
-          */
-          user_confirmed_freq_Khz = 0;
-          PLL_freq = user_confirmed_freq_Mhz * 10 + user_confirmed_freq_Khz;
+          //PLL freq can not be too large, as the 8bit mcu cannot compute large int accurately (for unknown reason, but reasonable)
+          //Need further verifications. Increase of accuracy is possible.
+          PLL_freq = user_confirmed_freq_Mhz * 10 + (user_confirmed_freq_Khz / 100); //Accurate to with in .1 decimal places. Limited by MCU computating power
           LCD_showString(1, 1, "Confirmed Freq:");
           LCD_showNum(2, 1, user_confirmed_freq_Mhz, 3);
           LCD_showString(2, 4, MHz);
@@ -249,7 +262,6 @@ int main(void) {
       case STATE_CONFIG_PLL_TXEN:  // configure PLL and TXEN.
         // DO NOT deal with computer input when configure PLL and TXEN
         reset_pll();
-        //PLL_freq = 30; //8000000 / 100000 800000000 / 1000000
         cd = 0;
         double FVCO_PLLfreqRatio = 0.0;
         // choose PLL & setup desired fvco
