@@ -53,12 +53,26 @@ void write_bulk(byte addr, byte* data, int len)
  * 
  */
 
-void set_phase(word mult) 
+void set_phase_helper(word mult) 
 {
     mult &= 0b1111111;
     write(SI5351_REGISTER_165_CLK0_INITIAL_PHASE_OFFSET, 0);
     write(SI5351_REGISTER_166_CLK1_INITIAL_PHASE_OFFSET, mult);
     write(SI5351_REGISTER_177_PLL_RESET, (1 << 7) | (1 << 5));
+}
+
+// calculate mult with different phase angle:
+word calculate_mult(int desired_phase_offset_deg, int Fvco, int F_desired){
+    word mult;
+    // 不知道要不要查 MSx_INT = 0 （我没打算查 感觉我们用不到MS6和MS7?）
+    double desired_offset_sec = desired_phase_offset_deg / (360.0 * F_desired);
+    mult = (word)(round(desired_offset_sec * 4 * Fvco));
+    return mult;
+}
+
+void set_phase(int desired_phase_offset_deg, int Fvco, int F_desired){
+    word mult = calculate_mult(desired_phase_offset_deg, Fvco, F_desired);
+    set_phase_helper(mult);
 }
 
 /*
