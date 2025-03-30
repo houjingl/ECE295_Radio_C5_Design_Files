@@ -461,7 +461,7 @@ void comp_display(){
     else if(state == 4){ //IF 未完成
       LCD_showString(1, 1, "IF:");
       LCD_showNum(2,1,000,3);
-      LCD_showNum(2,4,freq,9);
+      LCD_showNum(2,4,IF_freq,9);
       LCD_showNum(2,13,000,3);
       _delay_ms(100);   
       current_state = STATE_WAIT; 
