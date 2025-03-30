@@ -88,86 +88,86 @@ MP_PROCESSOR_OPTION=ATmega324PB
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/_ext/511298643/Si5351.o: ../M3_demo/Si5351.c  .generated_files/flags/default/8ab5827dcad3398ff3d60bc143c9daab8b393ae2 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/_ext/511298643/Si5351.o: ../M3_demo/Si5351.c  .generated_files/flags/default/e19b0ceac72053d99a6a29214234566994a2daf5 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/_ext/511298643" 
 	@${RM} ${OBJECTDIR}/_ext/511298643/Si5351.o.d 
 	@${RM} ${OBJECTDIR}/_ext/511298643/Si5351.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1 -g -DDEBUG  -gdwarf-2  -x c -D__$(MP_PROCESSOR_OPTION)__   -mdfp="${DFP_DIR}/xc8"  -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -DXPRJ_default=$(CND_CONF)  $(COMPARISON_BUILD)  -gdwarf-3 -mno-const-data-in-progmem     -MD -MP -MF "${OBJECTDIR}/_ext/511298643/Si5351.o.d" -MT "${OBJECTDIR}/_ext/511298643/Si5351.o.d" -MT ${OBJECTDIR}/_ext/511298643/Si5351.o -o ${OBJECTDIR}/_ext/511298643/Si5351.o ../M3_demo/Si5351.c 
 	
-${OBJECTDIR}/_ext/511298643/button.o: ../M3_demo/button.c  .generated_files/flags/default/2d3fd66a55120adc973bdff01efc549fc7d8bdd0 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/_ext/511298643/button.o: ../M3_demo/button.c  .generated_files/flags/default/fd512d7402932fc114d19987569a4b341c164e3f .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/_ext/511298643" 
 	@${RM} ${OBJECTDIR}/_ext/511298643/button.o.d 
 	@${RM} ${OBJECTDIR}/_ext/511298643/button.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1 -g -DDEBUG  -gdwarf-2  -x c -D__$(MP_PROCESSOR_OPTION)__   -mdfp="${DFP_DIR}/xc8"  -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -DXPRJ_default=$(CND_CONF)  $(COMPARISON_BUILD)  -gdwarf-3 -mno-const-data-in-progmem     -MD -MP -MF "${OBJECTDIR}/_ext/511298643/button.o.d" -MT "${OBJECTDIR}/_ext/511298643/button.o.d" -MT ${OBJECTDIR}/_ext/511298643/button.o -o ${OBJECTDIR}/_ext/511298643/button.o ../M3_demo/button.c 
 	
-${OBJECTDIR}/_ext/511298643/ft232.o: ../M3_demo/ft232.c  .generated_files/flags/default/471e46ad30d6fa1994c66c01e7f92213160af7b4 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/_ext/511298643/ft232.o: ../M3_demo/ft232.c  .generated_files/flags/default/fadb543cb62f8758576cf3e2d1b3cbe05feb8570 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/_ext/511298643" 
 	@${RM} ${OBJECTDIR}/_ext/511298643/ft232.o.d 
 	@${RM} ${OBJECTDIR}/_ext/511298643/ft232.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1 -g -DDEBUG  -gdwarf-2  -x c -D__$(MP_PROCESSOR_OPTION)__   -mdfp="${DFP_DIR}/xc8"  -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -DXPRJ_default=$(CND_CONF)  $(COMPARISON_BUILD)  -gdwarf-3 -mno-const-data-in-progmem     -MD -MP -MF "${OBJECTDIR}/_ext/511298643/ft232.o.d" -MT "${OBJECTDIR}/_ext/511298643/ft232.o.d" -MT ${OBJECTDIR}/_ext/511298643/ft232.o -o ${OBJECTDIR}/_ext/511298643/ft232.o ../M3_demo/ft232.c 
 	
-${OBJECTDIR}/_ext/511298643/lcd1602.o: ../M3_demo/lcd1602.c  .generated_files/flags/default/a77162413593cac9ed58c835e41973d8d9555284 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/_ext/511298643/lcd1602.o: ../M3_demo/lcd1602.c  .generated_files/flags/default/86bda43f6fb815dfadede116fe11ed8f0a87aad4 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/_ext/511298643" 
 	@${RM} ${OBJECTDIR}/_ext/511298643/lcd1602.o.d 
 	@${RM} ${OBJECTDIR}/_ext/511298643/lcd1602.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1 -g -DDEBUG  -gdwarf-2  -x c -D__$(MP_PROCESSOR_OPTION)__   -mdfp="${DFP_DIR}/xc8"  -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -DXPRJ_default=$(CND_CONF)  $(COMPARISON_BUILD)  -gdwarf-3 -mno-const-data-in-progmem     -MD -MP -MF "${OBJECTDIR}/_ext/511298643/lcd1602.o.d" -MT "${OBJECTDIR}/_ext/511298643/lcd1602.o.d" -MT ${OBJECTDIR}/_ext/511298643/lcd1602.o -o ${OBJECTDIR}/_ext/511298643/lcd1602.o ../M3_demo/lcd1602.c 
 	
-${OBJECTDIR}/_ext/511298643/rotary_encoder.o: ../M3_demo/rotary_encoder.c  .generated_files/flags/default/a79d65abf59fce51c7059b48e2014e8a24e590b9 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/_ext/511298643/rotary_encoder.o: ../M3_demo/rotary_encoder.c  .generated_files/flags/default/243ce107616f869e7541760a674a59a5bac59d4b .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/_ext/511298643" 
 	@${RM} ${OBJECTDIR}/_ext/511298643/rotary_encoder.o.d 
 	@${RM} ${OBJECTDIR}/_ext/511298643/rotary_encoder.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1 -g -DDEBUG  -gdwarf-2  -x c -D__$(MP_PROCESSOR_OPTION)__   -mdfp="${DFP_DIR}/xc8"  -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -DXPRJ_default=$(CND_CONF)  $(COMPARISON_BUILD)  -gdwarf-3 -mno-const-data-in-progmem     -MD -MP -MF "${OBJECTDIR}/_ext/511298643/rotary_encoder.o.d" -MT "${OBJECTDIR}/_ext/511298643/rotary_encoder.o.d" -MT ${OBJECTDIR}/_ext/511298643/rotary_encoder.o -o ${OBJECTDIR}/_ext/511298643/rotary_encoder.o ../M3_demo/rotary_encoder.c 
 	
-${OBJECTDIR}/_ext/511298643/twi.o: ../M3_demo/twi.c  .generated_files/flags/default/2accde06106495d0390a7c06013c711d94134231 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/_ext/511298643/twi.o: ../M3_demo/twi.c  .generated_files/flags/default/d5b676b89f5d1874bec3e1d4bc66d582adadd530 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/_ext/511298643" 
 	@${RM} ${OBJECTDIR}/_ext/511298643/twi.o.d 
 	@${RM} ${OBJECTDIR}/_ext/511298643/twi.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1 -g -DDEBUG  -gdwarf-2  -x c -D__$(MP_PROCESSOR_OPTION)__   -mdfp="${DFP_DIR}/xc8"  -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -DXPRJ_default=$(CND_CONF)  $(COMPARISON_BUILD)  -gdwarf-3 -mno-const-data-in-progmem     -MD -MP -MF "${OBJECTDIR}/_ext/511298643/twi.o.d" -MT "${OBJECTDIR}/_ext/511298643/twi.o.d" -MT ${OBJECTDIR}/_ext/511298643/twi.o -o ${OBJECTDIR}/_ext/511298643/twi.o ../M3_demo/twi.c 
 	
-${OBJECTDIR}/_ext/511298643/main.o: ../M3_demo/main.c  .generated_files/flags/default/5179d60553f558da8e22d1d7d3a2f36aabd9997a .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/_ext/511298643/main.o: ../M3_demo/main.c  .generated_files/flags/default/d196d0d9b6dc61aa4e4a0e313c14c367b310f2b8 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/_ext/511298643" 
 	@${RM} ${OBJECTDIR}/_ext/511298643/main.o.d 
 	@${RM} ${OBJECTDIR}/_ext/511298643/main.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1 -g -DDEBUG  -gdwarf-2  -x c -D__$(MP_PROCESSOR_OPTION)__   -mdfp="${DFP_DIR}/xc8"  -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -DXPRJ_default=$(CND_CONF)  $(COMPARISON_BUILD)  -gdwarf-3 -mno-const-data-in-progmem     -MD -MP -MF "${OBJECTDIR}/_ext/511298643/main.o.d" -MT "${OBJECTDIR}/_ext/511298643/main.o.d" -MT ${OBJECTDIR}/_ext/511298643/main.o -o ${OBJECTDIR}/_ext/511298643/main.o ../M3_demo/main.c 
 	
 else
-${OBJECTDIR}/_ext/511298643/Si5351.o: ../M3_demo/Si5351.c  .generated_files/flags/default/9c4bc67afc6a0c1d424a52ac3705af80048c705e .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/_ext/511298643/Si5351.o: ../M3_demo/Si5351.c  .generated_files/flags/default/bb54f75bf9557227703fa5f6ca400938957388cf .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/_ext/511298643" 
 	@${RM} ${OBJECTDIR}/_ext/511298643/Si5351.o.d 
 	@${RM} ${OBJECTDIR}/_ext/511298643/Si5351.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -x c -D__$(MP_PROCESSOR_OPTION)__   -mdfp="${DFP_DIR}/xc8"  -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -DXPRJ_default=$(CND_CONF)  $(COMPARISON_BUILD)  -gdwarf-3 -mno-const-data-in-progmem     -MD -MP -MF "${OBJECTDIR}/_ext/511298643/Si5351.o.d" -MT "${OBJECTDIR}/_ext/511298643/Si5351.o.d" -MT ${OBJECTDIR}/_ext/511298643/Si5351.o -o ${OBJECTDIR}/_ext/511298643/Si5351.o ../M3_demo/Si5351.c 
 	
-${OBJECTDIR}/_ext/511298643/button.o: ../M3_demo/button.c  .generated_files/flags/default/b9d87684dbfa929ea688f31807c4695856f14eb6 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/_ext/511298643/button.o: ../M3_demo/button.c  .generated_files/flags/default/525279494da20f8c007f7b8269bdeb8c813f7f4f .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/_ext/511298643" 
 	@${RM} ${OBJECTDIR}/_ext/511298643/button.o.d 
 	@${RM} ${OBJECTDIR}/_ext/511298643/button.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -x c -D__$(MP_PROCESSOR_OPTION)__   -mdfp="${DFP_DIR}/xc8"  -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -DXPRJ_default=$(CND_CONF)  $(COMPARISON_BUILD)  -gdwarf-3 -mno-const-data-in-progmem     -MD -MP -MF "${OBJECTDIR}/_ext/511298643/button.o.d" -MT "${OBJECTDIR}/_ext/511298643/button.o.d" -MT ${OBJECTDIR}/_ext/511298643/button.o -o ${OBJECTDIR}/_ext/511298643/button.o ../M3_demo/button.c 
 	
-${OBJECTDIR}/_ext/511298643/ft232.o: ../M3_demo/ft232.c  .generated_files/flags/default/c6756b70c80586528c78c351dc637da27a9f7796 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/_ext/511298643/ft232.o: ../M3_demo/ft232.c  .generated_files/flags/default/1264493bb7d723d07e84cbeb6e6db297d2334cbf .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/_ext/511298643" 
 	@${RM} ${OBJECTDIR}/_ext/511298643/ft232.o.d 
 	@${RM} ${OBJECTDIR}/_ext/511298643/ft232.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -x c -D__$(MP_PROCESSOR_OPTION)__   -mdfp="${DFP_DIR}/xc8"  -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -DXPRJ_default=$(CND_CONF)  $(COMPARISON_BUILD)  -gdwarf-3 -mno-const-data-in-progmem     -MD -MP -MF "${OBJECTDIR}/_ext/511298643/ft232.o.d" -MT "${OBJECTDIR}/_ext/511298643/ft232.o.d" -MT ${OBJECTDIR}/_ext/511298643/ft232.o -o ${OBJECTDIR}/_ext/511298643/ft232.o ../M3_demo/ft232.c 
 	
-${OBJECTDIR}/_ext/511298643/lcd1602.o: ../M3_demo/lcd1602.c  .generated_files/flags/default/f92157836a0515e68824235b55f100aff435c69a .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/_ext/511298643/lcd1602.o: ../M3_demo/lcd1602.c  .generated_files/flags/default/b0812397e79130f5cc5badafc84fe14f90b2885a .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/_ext/511298643" 
 	@${RM} ${OBJECTDIR}/_ext/511298643/lcd1602.o.d 
 	@${RM} ${OBJECTDIR}/_ext/511298643/lcd1602.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -x c -D__$(MP_PROCESSOR_OPTION)__   -mdfp="${DFP_DIR}/xc8"  -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -DXPRJ_default=$(CND_CONF)  $(COMPARISON_BUILD)  -gdwarf-3 -mno-const-data-in-progmem     -MD -MP -MF "${OBJECTDIR}/_ext/511298643/lcd1602.o.d" -MT "${OBJECTDIR}/_ext/511298643/lcd1602.o.d" -MT ${OBJECTDIR}/_ext/511298643/lcd1602.o -o ${OBJECTDIR}/_ext/511298643/lcd1602.o ../M3_demo/lcd1602.c 
 	
-${OBJECTDIR}/_ext/511298643/rotary_encoder.o: ../M3_demo/rotary_encoder.c  .generated_files/flags/default/f68724f97392e1296e15b258ddc0f251106c4003 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/_ext/511298643/rotary_encoder.o: ../M3_demo/rotary_encoder.c  .generated_files/flags/default/cdc347ae7c2725b00f81c94e5d6c78bf3322d4f4 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/_ext/511298643" 
 	@${RM} ${OBJECTDIR}/_ext/511298643/rotary_encoder.o.d 
 	@${RM} ${OBJECTDIR}/_ext/511298643/rotary_encoder.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -x c -D__$(MP_PROCESSOR_OPTION)__   -mdfp="${DFP_DIR}/xc8"  -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -DXPRJ_default=$(CND_CONF)  $(COMPARISON_BUILD)  -gdwarf-3 -mno-const-data-in-progmem     -MD -MP -MF "${OBJECTDIR}/_ext/511298643/rotary_encoder.o.d" -MT "${OBJECTDIR}/_ext/511298643/rotary_encoder.o.d" -MT ${OBJECTDIR}/_ext/511298643/rotary_encoder.o -o ${OBJECTDIR}/_ext/511298643/rotary_encoder.o ../M3_demo/rotary_encoder.c 
 	
-${OBJECTDIR}/_ext/511298643/twi.o: ../M3_demo/twi.c  .generated_files/flags/default/e4269930478de834c43ac7ed87b6fa11e3e74cf1 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/_ext/511298643/twi.o: ../M3_demo/twi.c  .generated_files/flags/default/6f2b6ca821005fc5b8820496a9358e83fcc6a10f .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/_ext/511298643" 
 	@${RM} ${OBJECTDIR}/_ext/511298643/twi.o.d 
 	@${RM} ${OBJECTDIR}/_ext/511298643/twi.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -x c -D__$(MP_PROCESSOR_OPTION)__   -mdfp="${DFP_DIR}/xc8"  -Wl,--gc-sections -O1 -ffunction-sections -fdata-sections -fshort-enums -fno-common -funsigned-char -funsigned-bitfields -Wall -DXPRJ_default=$(CND_CONF)  $(COMPARISON_BUILD)  -gdwarf-3 -mno-const-data-in-progmem     -MD -MP -MF "${OBJECTDIR}/_ext/511298643/twi.o.d" -MT "${OBJECTDIR}/_ext/511298643/twi.o.d" -MT ${OBJECTDIR}/_ext/511298643/twi.o -o ${OBJECTDIR}/_ext/511298643/twi.o ../M3_demo/twi.c 
 	
-${OBJECTDIR}/_ext/511298643/main.o: ../M3_demo/main.c  .generated_files/flags/default/ba6bed988e1a0013cd3738ed1021dc7d6c8bb5aa .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/_ext/511298643/main.o: ../M3_demo/main.c  .generated_files/flags/default/7eb35ac34cc03868ada2220c0eb683dee6db34b0 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/_ext/511298643" 
 	@${RM} ${OBJECTDIR}/_ext/511298643/main.o.d 
 	@${RM} ${OBJECTDIR}/_ext/511298643/main.o 

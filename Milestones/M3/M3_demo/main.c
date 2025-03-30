@@ -32,10 +32,38 @@ volatile int encoder1_count = 0;         // Mhz
 volatile int encoder2_count = 0;         // Khz
 volatile unsigned char old_state_1 = 0;  // old state for encoder 1 (PA0,PA1)
 volatile unsigned char old_state_2 = 0;  // old state for encoder 2 (PA2,PA3)
+
+//uart
+extern volatile int Mhz;                 // Mhz from UART
+extern volatile int Khz;                 // Khz from UART
+extern int state;                        // state for UART display
+extern int IF_freq = 0;                         // IF frequency
 char cmdBuffer[CMD_BUFFER_SIZE];         // CAT command buffer
 uint8_t index = 0;                       // Index for command buffer
-int counter = 0;                         // counter for timer
 bool computer_input_detected = false;    // Flag for computer input
+
+//timer
+int counter = 0;                         // counter for timer
+
+//freq
+volatile int user_confirmed_freq_Mhz = 0;
+volatile int user_confirmed_freq_Khz = 0;
+volatile int PLL_freq = 0;
+
+// LCD:
+char* homepageMessage = "PUSH ANY BUTTONTO START";
+char* frequency = "Frequency:";
+char* MHz = "MHz";
+char* KHz = "KHz";
+char space = ' ';
+char* modeselection = "Please";
+char* TX = "TX";
+char* RX = "RX";
+
+
+// Important variables
+bool user_input_detected = false;
+unsigned char TXEN_N = 0;
 
 // FSM
 typedef enum {
@@ -53,27 +81,12 @@ typedef enum {
 int page_index = 0;
 State current_state = STATE_WAIT;  // set initial state to STATE_WAIT
 
+
+
 // additional function
 void handle_UART(bool computer_input_detected);
 void encoder_init(void);
-
-// LCD:
-char* homepageMessage = "PUSH ANY BUTTONTO START";
-char* frequency = "Frequency:";
-char* MHz = "MHz";
-char* KHz = "KHz";
-char space = ' ';
-char* modeselection = "Please";
-char* TX = "TX";
-char* RX = "RX";
-
-
-  // Important variables
-  bool user_input_detected = false;
-  unsigned char TXEN_N = 0;
-  volatile int user_confirmed_freq_Mhz = 0;
-  volatile int user_confirmed_freq_Khz = 0;
-  volatile int PLL_freq = 0;
+void comp_display();
 
 // main
 int main(void) {
@@ -287,7 +300,7 @@ int main(void) {
         if (computer_input_detected) {
           current_state = UART_DISPLAY;
         } else {
-          current_state = STATE_WAIT;
+          current_state = STATE_COMPUTER_MODE;
         }
         break;
 
@@ -439,7 +452,7 @@ void comp_display(){
     else if(state == 4){ //IF 未完成
       LCD_showString(1, 1, "IF:");
       LCD_showNum(2,1,000,3);
-      LCD_showNum(2,4,freq,9);
+      LCD_showNum(2,4,IF_freq,9);
       LCD_showNum(2,13,000,3);
       _delay_ms(100);   
       current_state = STATE_WAIT; 
