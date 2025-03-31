@@ -89,6 +89,7 @@ void ProcessCATCommand(const char *cmd) {
             Mhz = freq / 1000000; // Extract MHz part
             Khz = (freq % 1000000) / 1000; // Extract kHz part
             IF_freq = freq; // Example: calculate IF frequency
+            // mhz khz 000
         } else {
             USART0_SendString("FA command missing frequency\r\n");
         }

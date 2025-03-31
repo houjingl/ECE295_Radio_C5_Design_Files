@@ -156,6 +156,7 @@ int main(void) {
           page_index = 0;
           tutorial_time_counter = 0;
           LCD_Clear_screen();
+          current_state = STATE_COMPUTER_MODE;
         }
 
         break;
@@ -198,10 +199,10 @@ int main(void) {
         break;
 
       case STATE_LAYER2_STAGE1:  // Layer2: handle TX/RX MODE. Stage1: SELECT
-        if (computer_input_detected) {
-          current_state = STATE_COMPUTER_MODE;
-          break;
-        }
+        // if (computer_input_detected) {
+        //   current_state = STATE_COMPUTER_MODE;
+        //   break;
+        // }
 
         LCD_showString(1, 2, TX);
         LCD_showString(1, 11, modeselection);
@@ -227,10 +228,10 @@ int main(void) {
         break;
 
       case STATE_LAYER2_STAGE2:  // Layer2: handle TX/RX MODE. Stage2: CONFIRM
-        if (computer_input_detected) {
-          current_state = STATE_COMPUTER_MODE;
-          break;
-        }
+        // if (computer_input_detected) {
+        //   current_state = STATE_COMPUTER_MODE;
+        //   break;
+        // }
         LCD_showString(1, 1, "Mode Confirmed:");
         if (TXEN_N) {
           LCD_showString_clear_delay_1s(2, 1, "RX Mode");

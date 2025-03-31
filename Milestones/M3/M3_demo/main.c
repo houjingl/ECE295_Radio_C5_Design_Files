@@ -37,7 +37,7 @@ volatile unsigned char old_state_2 = 0;  // old state for encoder 2 (PA2,PA3)
 extern volatile int Mhz;                 // Mhz from UART
 extern volatile int Khz;                 // Khz from UART
 extern int state;                        // state for UART display
-extern int IF_freq = 0;                         // IF frequency
+extern int IF_freq;                         // IF frequency
 char cmdBuffer[CMD_BUFFER_SIZE];         // CAT command buffer
 uint8_t index = 0;                       // Index for command buffer
 bool computer_input_detected = false;    // Flag for computer input
@@ -174,6 +174,8 @@ int main(void) {
           page_index = 0;
           tutorial_time_counter = 0;
           LCD_Clear_screen();
+          current_state = STATE_COMPUTER_MODE;
+          break;
         }
 
         break;
@@ -255,7 +257,7 @@ int main(void) {
           user_confirmed_freq_Khz = encoder2_count;
           //PLL freq cannot be too large, as the 8bit mcu cannot compute large int accurately (for unknown reason, but reasonable)
           //Need further verifications. Increase of accuracy is possible.
-          PLL_freq = user_confirmed_freq_Mhz * 10; //+ (user_confirmed_freq_Khz / 100); //Accurate to with in .1 decimal places. Limited by MCU computating power
+          PLL_freq = user_confirmed_freq_Mhz * 10; + (user_confirmed_freq_Khz / 100); //Accurate to with in .1 decimal places. Limited by MCU computating power
           LCD_showString(1, 1, "Confirmed Freq:");
           LCD_showNum(2, 1, user_confirmed_freq_Mhz, 3);
           LCD_showString(2, 4, MHz);
@@ -267,55 +269,50 @@ int main(void) {
         }
         break;
 
-      case STATE_CONFIG_PLL_TXEN:  // configure PLL and TXEN.
+        case STATE_CONFIG_PLL_TXEN:  // configure PLL and TXEN.
         // DO NOT deal with computer input when configure PLL and TXEN
-        reset_pll();
-        set_phase(0);
-        cd = 0;
-        double FVCO_PLLfreqRatio = 0.0;
-        int mult_phase = 800 / user_confirmed_freq_Mhz;
-        //14M -> 45
-        //13M -> 48
-        //12M -> 51
-        //11M -> 57
-        //10M -> 66
-        //9M -> 76
-        
-        //5M -> 126
-        //6M -> 90
-        set_phase(mult_phase);
-        /***********/
-        FVCO_PLLfreqRatio = 8000 / PLL_freq;
-        double dummy = FVCO_PLLfreqRatio - 10;
-        cd = 100000.0 / dummy;
-        setup_clock(SI5351_PLL_A, SI5351_PORT0, 10, 100000, cd);
-        setup_clock(SI5351_PLL_A, SI5351_PORT1,10, 100000, cd );
-        reset_pll();
-        enable_clocks(enabled);
-        
-        // configure TX/RX mode
-        if (TXEN_N) {
-          PORTD |= (1 << TXEN_BIT);
-        } else {
-          PORTD &= ~(1 << TXEN_BIT);
-        }
-        current_state = STATE_WAIT;
+          reset_pll();
+          set_phase(0);
+          cd = 0;
+          double FVCO_PLLfreqRatio = 0.0;
+          int mult_phase = 800 / user_confirmed_freq_Mhz;
+          if (user_confirmed_freq_Mhz <= 6){
+            mult_phase /= 3;
+          }
+          set_phase(mult_phase);
+          /***********/
+          FVCO_PLLfreqRatio = 8000 / PLL_freq;
+          double dummy = FVCO_PLLfreqRatio - 10;
+          cd = 100000.0 / dummy;
+          setup_clock(SI5351_PLL_A, SI5351_PORT0, 10, 100000, cd);
+          setup_clock(SI5351_PLL_A, SI5351_PORT1,10, 100000, cd );
+          reset_pll();
+          enable_clocks(enabled);
+
+
+          // configure TX/RX mode
+          if (TXEN_N) {
+            PORTD |= (1 << TXEN_BIT);
+          } else {
+            PORTD &= ~(1 << TXEN_BIT);
+          }
+          current_state = STATE_WAIT;
         break;
 
         case STATE_COMPUTER_MODE:
-        LCD_Clear_screen();
-        // parse computer command
-        LCD_showString(1, 1, "COMP CTRL");
-        handle_UART(computer_input_detected);
-        if (computer_input_detected) {
-          current_state = UART_DISPLAY;
-        } else {
-          current_state = STATE_COMPUTER_MODE;
-        }
-        
-        if(knobL_read() || knobR_read()){
-          computer_input_detected = 0;
-        }
+          // parse computer command
+          LCD_showString(1, 1, "COMP CTRL");
+          handle_UART(computer_input_detected);
+          if (computer_input_detected) {
+            current_state = UART_DISPLAY;
+          } else {
+            current_state = STATE_COMPUTER_MODE;
+          }
+          
+          if(knobL_read() || knobR_read()){
+            computer_input_detected = 0;
+            current_state = STATE_WAIT;
+          }
         break;
         
 
@@ -435,7 +432,7 @@ void comp_display(){
       if (button2_read()) { // confirm
         user_confirmed_freq_Mhz = Mhz;
         user_confirmed_freq_Khz = Khz;
-        PLL_freq = encoder1_count * 1000000 + encoder2_count * 1000;
+        PLL_freq = Mhz * 10 + Khz / 100; //Accurate to with in .1 decimal places. Limited by MCU computating power
         LCD_showString(1, 1, "Confirmed Freq:");
         LCD_showNum(2, 1, Mhz, 3);
         LCD_showString(2, 4, MHz);
@@ -452,25 +449,35 @@ void comp_display(){
       LCD_showString(1, 1, "Mode Confirmed:");
       LCD_showString_clear_delay_1s(2, 1, "TX Mode"); 
       TXEN_N=0;
-      _delay_ms(100);
-      current_state = STATE_WAIT; 
+      if (TXEN_N) {
+        PORTD |= (1 << TXEN_BIT);
+      } else {
+        PORTD &= ~(1 << TXEN_BIT);
+      }
+      current_state = STATE_COMPUTER_MODE; 
       break;
     }
     else if(state == 3){ //RX
       LCD_showString(1, 1, "Mode Confirmed:");
-      LCD_showString_clear_delay_1s(2, 1, "RX Mode");   
+      LCD_showString_clear_delay_1s(2, 1, "RX Mode"); 
       TXEN_N=1;
-      _delay_ms(100);   
-      current_state = STATE_WAIT; 
+      if (TXEN_N) {
+        PORTD |= (1 << TXEN_BIT);
+      } else {
+        PORTD &= ~(1 << TXEN_BIT);
+      }
+      current_state = STATE_COMPUTER_MODE;
       break;
     }
     else if(state == 4){ //IF 未完成
+      LCD_Clear_screen();
       LCD_showString(1, 1, "IF:");
-      LCD_showNum(2,1,000,3);
-      LCD_showNum(2,4,IF_freq,9);
-      LCD_showNum(2,13,000,3);
-      _delay_ms(100);   
-      current_state = STATE_WAIT; 
+      LCD_showNum(1,4,000,3);
+      LCD_showNum(1,7,Mhz,3);
+      LCD_showNum(1,9,Khz,3);
+      LCD_showNum(1,12,0,3);
+      LCD_showNum(2,1,0,13)
+      current_state = STATE_COMPUTER_MODE; 
       break;
     }
   }
