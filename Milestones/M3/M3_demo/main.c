@@ -255,7 +255,7 @@ int main(void) {
           user_confirmed_freq_Khz = encoder2_count;
           //PLL freq cannot be too large, as the 8bit mcu cannot compute large int accurately (for unknown reason, but reasonable)
           //Need further verifications. Increase of accuracy is possible.
-          PLL_freq = user_confirmed_freq_Mhz * 10 + (user_confirmed_freq_Khz / 100); //Accurate to with in .1 decimal places. Limited by MCU computating power
+          PLL_freq = user_confirmed_freq_Mhz * 10; //+ (user_confirmed_freq_Khz / 100); //Accurate to with in .1 decimal places. Limited by MCU computating power
           LCD_showString(1, 1, "Confirmed Freq:");
           LCD_showNum(2, 1, user_confirmed_freq_Mhz, 3);
           LCD_showString(2, 4, MHz);
@@ -270,17 +270,27 @@ int main(void) {
       case STATE_CONFIG_PLL_TXEN:  // configure PLL and TXEN.
         // DO NOT deal with computer input when configure PLL and TXEN
         reset_pll();
+        set_phase(0);
         cd = 0;
         double FVCO_PLLfreqRatio = 0.0;
-        // choose PLL & setup desired fvco
-        /*SET PHASE*/
-        set_phase(800 / user_confirmed_freq_Mhz);
+        int mult_phase = 800 / user_confirmed_freq_Mhz;
+        //14M -> 45
+        //13M -> 48
+        //12M -> 51
+        //11M -> 57
+        //10M -> 66
+        //9M -> 76
+        
+        //5M -> 126
+        //6M -> 90
+        set_phase(mult_phase);
         /***********/
         FVCO_PLLfreqRatio = 8000 / PLL_freq;
         double dummy = FVCO_PLLfreqRatio - 10;
         cd = 100000.0 / dummy;
         setup_clock(SI5351_PLL_A, SI5351_PORT0, 10, 100000, cd);
         setup_clock(SI5351_PLL_A, SI5351_PORT1,10, 100000, cd );
+        reset_pll();
         enable_clocks(enabled);
         
         // configure TX/RX mode
@@ -302,7 +312,12 @@ int main(void) {
         } else {
           current_state = STATE_COMPUTER_MODE;
         }
+        
+        if(knobL_read() || knobR_read()){
+          computer_input_detected = 0;
+        }
         break;
+        
 
       case UART_DISPLAY:
         comp_display();
