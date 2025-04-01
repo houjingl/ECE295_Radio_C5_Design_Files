@@ -185,20 +185,26 @@ int main(void) {
         tutorial_time_counter++;
         tutorial_time_counter %= 50;
         if (!tutorial_time_counter) {
-          if (page_index == 2) {
-            page_index = 2;
+          if (page_index == 3) {
+            current_state = STATE_LAYER2_STAGE1;
           } else {
             page_index++;
           }
         }
 
         if (page_index == 0) {
+          LCD_showString(1, 1, "User TUT Press");
+          LCD_showString(2, 1, "CONFIRM to skip");
+
+        } else if (page_index == 1) {
           LCD_showString(1, 1, "Top Button");
           LCD_showString(2, 1, "for TX");
-        } else if (page_index == 1) {
+          
+        } else if (page_index == 2) {
           LCD_showString(1, 1, "Bottom Button");
           LCD_showString(2, 1, "for RX");
-        } else if (page_index == 2) {
+          
+        } else if (page_index == 3) {
           LCD_showString(1, 1, "Middle Button");
           LCD_showString(2, 1, "to Confirm");
         }
@@ -212,10 +218,10 @@ int main(void) {
         break;
 
       case STATE_LAYER2_STAGE1:  // Layer2: handle TX/RX MODE. Stage1: SELECT
-        LCD_showString(1, 2, TX);
+        LCD_showString(1, 1, TX);
         LCD_showString(1, 11, modeselection);
         LCD_showString(2, 6, "Select Mode");
-        LCD_showString(2, 2, RX);
+        LCD_showString(2, 1, RX);
 
         if (button1_read()){
           LCD_Clear_screen();
@@ -231,6 +237,16 @@ int main(void) {
 
         if (button2_read()) {
           current_state = STATE_LAYER2_STAGE2;
+          LCD_Clear_screen();
+        }
+
+        if(knobL_read()){
+          current_state = STATE_WAIT;
+          LCD_Clear_screen();
+        }
+
+        if(knobR_read()){
+          current_state = STATE_LAYER3;
           LCD_Clear_screen();
         }
         break;
@@ -267,6 +283,12 @@ int main(void) {
           LCD_showString_clear_delay_1s(1, 16, " ");
           current_state = STATE_CONFIG_PLL_TXEN;
         }
+
+        if(knobL_read()){
+          current_state = STATE_LAYER2_STAGE1;
+          LCD_Clear_screen();
+        }
+
         break;
 
         case STATE_CONFIG_PLL_TXEN:  // configure PLL and TXEN.

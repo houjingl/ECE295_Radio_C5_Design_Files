@@ -11,6 +11,19 @@ int Khz =0;
 int state = 0; // state for UART display // 1 -> FA 2->TX  3-> RX 4-> IF 
 int IF_freq = 0; // IF frequency
 
+/*
+Using TX/RX0
+Check UDR0 for Transmitted and Received Data
+Important control regs UCSRnA-D:
+    1.UCSRnA: indicate errors happened during data transmission. Indicate state of UDR buffer
+        Doubling the transmission speed and Multi processor mode
+    2.UCSRnB: USART TXEN and RXEN. USART interrput device enable. Character size bit 3. bit 8 in 9bits mode
+    3.UCSRnC: USART mode & frame format. Character size config
+    4.UCSRnD: only 3 LSB in effect. enable and config USART control over MCU in sleep mode
+
+UBRRnL & UBRRnH -> Baud rate reg low and high. Total of 12 bits without reg address offset
+*/
+
 
 void USART0_Init(void) {
     // Set baud rate registers
