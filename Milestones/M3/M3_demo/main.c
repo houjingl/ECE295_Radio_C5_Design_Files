@@ -40,7 +40,7 @@ extern int state;                        // state for UART display
 extern int IF_freq;                         // IF frequency
 char cmdBuffer[CMD_BUFFER_SIZE];         // CAT command buffer
 uint8_t index = 0;                       // Index for command buffer
-bool computer_input_detected = false;    // Flag for computer input
+bool computer_input_detected = false;    // Flag for computer input （用于pll回 comp 还是 user 的判断）
 
 //timer
 int counter = 0;                         // counter for timer
@@ -134,11 +134,11 @@ int main(void) {
 
   while (1) {
     switch (current_state) {
-      case STATE_WAIT:
-        if (computer_input_detected) {
-          current_state = STATE_COMPUTER_MODE;
-          break;
-        }
+      case STATE_WAIT: 
+        // if (computer_input_detected) {   我觉得这个判断是多余的
+        //   current_state = STATE_COMPUTER_MODE;
+        //   break;
+        // }
 
         _delay_ms(1);
         tutorial_time_counter++;
@@ -296,19 +296,19 @@ int main(void) {
           } else {
             PORTD &= ~(1 << TXEN_BIT);
           }
-          current_state = STATE_WAIT;
+          if(computer_input_detected){
+            current_state = STATE_COMPUTER_MODE;
+          }else{
+            current_state = STATE_WAIT;
+          }
         break;
 
         case STATE_COMPUTER_MODE:
           // parse computer command
           LCD_showString(1, 1, "COMP CTRL");
-          handle_UART(computer_input_detected);
-          if (computer_input_detected) {
-            current_state = UART_DISPLAY;
-          } else {
-            current_state = STATE_COMPUTER_MODE;
-          }
-          
+          handle_UART();
+          current_state = UART_DISPLAY;
+        
           if(knobL_read() || knobR_read()){
             computer_input_detected = 0;
             current_state = STATE_WAIT;
@@ -393,8 +393,8 @@ void encoder_init() {
 }
 
 // uart
-void handle_UART(bool computer_input_detected) {
-  while (computer_input_detected) {
+void handle_UART() {
+  while (1) {
     uint8_t received = USART0_Receive();
     // Echo back the received character (optional)
     USART0_Transmit(received);
