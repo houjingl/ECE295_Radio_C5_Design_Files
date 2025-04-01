@@ -189,6 +189,7 @@ int main(void) {
             current_state = STATE_LAYER2_STAGE1;
           } else {
             page_index++;
+            LCD_Clear_screen();
           }
         }
 
