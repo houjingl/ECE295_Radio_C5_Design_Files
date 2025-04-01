@@ -34,8 +34,8 @@ volatile unsigned char old_state_1 = 0;  // old state for encoder 1 (PA0,PA1)
 volatile unsigned char old_state_2 = 0;  // old state for encoder 2 (PA2,PA3)
 
 //uart
-extern volatile int Mhz;                 // Mhz from UART
-extern volatile int Khz;                 // Khz from UART
+extern int Mhz;                 // Mhz from UART
+extern int Khz;                 // Khz from UART
 extern int state;                        // state for UART display
 extern int IF_freq;                         // IF frequency
 char cmdBuffer[CMD_BUFFER_SIZE];         // CAT command buffer
@@ -84,7 +84,7 @@ State current_state = STATE_WAIT;  // set initial state to STATE_WAIT
 
 
 // additional function
-void handle_UART(bool computer_input_detected);
+void handle_UART();
 void encoder_init(void);
 void comp_display();
 
@@ -325,22 +325,33 @@ int main(void) {
           }
         break;
 
-        case STATE_COMPUTER_MODE:
-          // parse computer command
-          LCD_showString(1, 1, "COMP CTRL");
-          handle_UART();
-          current_state = UART_DISPLAY;
         
+        case STATE_COMPUTER_MODE:
+        LCD_showString(1, 1, "COMP CTRL");
+        int i=0; //software delay
+        bool user=false;
+        while(i!=30000){
           if(knobL_read() || knobR_read()){
             computer_input_detected = 0;
             current_state = STATE_WAIT;
+            user =true;
+            break;
           }
+          i++;
+        }
+        if(user==false){
+          handle_UART();
+          current_state = UART_DISPLAY;
+        }else{
+          current_state = STATE_WAIT;
+          break;
+        }  // parse computer command
+
         break;
         
 
       case UART_DISPLAY:
         comp_display();
-        computer_input_detected = false;
         break;
 
       default:
@@ -451,7 +462,8 @@ void comp_display(){
       LCD_showChar(2, 7, space);
       LCD_showNum(2, 8, Khz, 3);
       LCD_showString(2, 11, KHz);
-      if (button2_read()) { // confirm
+      LCD_showString_clear_delay_1s(1, 16, " ");
+      
         user_confirmed_freq_Mhz = Mhz;
         user_confirmed_freq_Khz = Khz;
         PLL_freq = Mhz * 10 + Khz / 100; //Accurate to with in .1 decimal places. Limited by MCU computating power
@@ -463,7 +475,7 @@ void comp_display(){
         LCD_showString(2, 11, KHz);
         LCD_showString_clear_delay_1s(1, 16, " ");
         current_state = STATE_CONFIG_PLL_TXEN;
-      }
+      
       // computer_input_detected = false; // Reset the flag to stop processing
       break;
     }
@@ -495,11 +507,12 @@ void comp_display(){
       LCD_Clear_screen();
       LCD_showString(1, 1, "IF:");
       LCD_showNum(1,4,000,3);
-      LCD_showNum(1,7,Mhz,3);
-      LCD_showNum(1,9,Khz,3);
-      LCD_showNum(1,12,0,3);
-      LCD_showNum(2,1,0,13)
-      current_state = STATE_COMPUTER_MODE; 
+      LCD_showNum(1,7,user_confirmed_freq_Mhz,3);
+      LCD_showNum(1,10,user_confirmed_freq_Khz,3);
+      LCD_showNum(1,13,0,3);
+      LCD_showNum(2,1,0000000000000,13);
+      LCD_showString_clear_delay_1s(2,16, " ");
+      current_state = STATE_COMPUTER_MODE;
       break;
     }
   }
