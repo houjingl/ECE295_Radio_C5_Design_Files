@@ -429,9 +429,19 @@ void encoder_init() {
 // uart
 void handle_UART() {
   while (1) {
-    uint8_t received = USART0_Receive();
-    // Echo back the received character (optional)
-    USART0_Transmit(received);
+    if((UCSR0A & (1 << RXC))){
+      uint8_t received = USART0_Receive();
+      // Echo back the received character (optional)
+      USART0_Transmit(received);
+    }
+
+    if(knobL_read() || knobR_read()){
+      computer_input_detected = 0;
+      current_state = STATE_WAIT;
+  
+      break;
+    }
+    
 
     if (received == ';') {
       // End-of-command detected; terminate string and process command.
