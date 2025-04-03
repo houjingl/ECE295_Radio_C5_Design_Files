@@ -98,7 +98,7 @@ void ProcessCATCommand(const char *cmd) {
             long freq = atol(cmd + 2);
             char buffer[32];
             // In a complete design, you'd update your LO (Local Oscillator) setting here.
-            sprintf(buffer, "VFO-A set to %ld Hz\r\n", freq);
+           // sprintf(buffer, "VFO-A set to %ld Hz\r\n", freq);
             USART0_SendString(buffer);
             // Update global variables for frequency display
             Mhz = freq / 1000000;         // Extract MHz part
@@ -112,7 +112,7 @@ void ProcessCATCommand(const char *cmd) {
         if (strlen(cmd) > 2) {
             long freq = atol(cmd + 2);
             char buffer[32];
-            sprintf(buffer, "VFO-B set to %ld Hz\r\n", freq);
+           // sprintf(buffer, "VFO-B set to %ld Hz\r\n", freq);
             USART0_SendString(buffer);
         } else {
             USART0_SendString("FB command missing frequency\r\n");
@@ -180,9 +180,9 @@ void ProcessCATCommand(const char *cmd) {
         // "IF001xxxxxxxxx+000000C00000;" where xxxxxxxxx is the 9-digit integer from the FA command.
         if (strcmp(cmd, "IF;") == 0) {
             char freqStr[10];  // 9 digits plus terminating null
-            sprintf(freqStr, "%09ld", IF_freq);
+           // sprintf(freqStr, "%09ld", IF_freq);
             char buffer[40];
-            sprintf(buffer, "IF001%s+000000C00000;", freqStr);
+           // sprintf(buffer, "IF001%s+000000C00000;", freqStr);
             USART0_SendString(buffer);
         } else {
             // Otherwise, use the original IF command behavior

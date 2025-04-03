@@ -26,26 +26,26 @@
 // #define AD 10
 // #define BD 1000000
 
-
 // global variables
 volatile int encoder1_count = 0;         // Mhz
 volatile int encoder2_count = 0;         // Khz
 volatile unsigned char old_state_1 = 0;  // old state for encoder 1 (PA0,PA1)
 volatile unsigned char old_state_2 = 0;  // old state for encoder 2 (PA2,PA3)
 
-//uart
-extern int Mhz;                 // Mhz from UART
-extern int Khz;                 // Khz from UART
-extern int state;                        // state for UART display
-extern int IF_freq;                         // IF frequency
-char cmdBuffer[CMD_BUFFER_SIZE];         // CAT command buffer
-uint8_t index = 0;                       // Index for command buffer
-bool computer_input_detected = false;    // Flag for computer input （用于pll回 comp 还是 user 的判断）
+// uart
+extern int Mhz;                   // Mhz from UART
+extern int Khz;                   // Khz from UART
+extern int state;                 // state for UART display
+extern int IF_freq;               // IF frequency
+char cmdBuffer[CMD_BUFFER_SIZE];  // CAT command buffer
+uint8_t index = 0;                // Index for command buffer
+bool computer_input_detected =
+    false;  // Flag for computer input （用于pll回 comp 还是 user 的判断）
 
-//timer
-int counter = 0;                         // counter for timer
+// timer
+int counter = 0;  // counter for timer
 
-//freq
+// freq
 volatile int user_confirmed_freq_Mhz = 0;
 volatile int user_confirmed_freq_Khz = 0;
 volatile int PLL_freq = 0;
@@ -59,7 +59,6 @@ char space = ' ';
 char* modeselection = "Please";
 char* TX = "TX";
 char* RX = "RX";
-
 
 // Important variables
 bool user_input_detected = false;
@@ -81,8 +80,6 @@ typedef enum {
 int page_index = 0;
 State current_state = STATE_WAIT;  // set initial state to STATE_WAIT
 
-
-
 // additional function
 void handle_UART();
 void encoder_init(void);
@@ -95,9 +92,9 @@ int main(void) {
   DDRD |= (1 << TXEN_BIT);
   PORTD &= ~(1 << TXEN_BIT);  // default TXEN = 0 -> TX mode
 
-  //TUTORIAL
+  // TUTORIAL
   unsigned int tutorial_time_counter = 0;
-  
+
   // LCD
   LCD_regInit();
   LCD_Init();
@@ -128,13 +125,12 @@ int main(void) {
   reset_pll();
   //  choose PLL & setup desired fvco
   setup_PLL(SI5351_PLL_A, 32, 0, 1);  // 25 * 32 = 800 Mhz for Fvco, this does
-  set_phase(90);  // initial set
+  set_phase(90);                      // initial set
   // enable_clocks(enabled);
-
 
   while (1) {
     switch (current_state) {
-      case STATE_WAIT: 
+      case STATE_WAIT:
         // if (computer_input_detected) {   我觉得这个判断是多余的
         //   current_state = STATE_COMPUTER_MODE;
         //   break;
@@ -159,7 +155,7 @@ int main(void) {
           LCD_showString(1, 1, "> COMPUTER CTRL");
           LCD_showString(2, 1, "PUSH ANY KNOB");
         }
-        
+
         if (button1_read() || button2_read() ||
             button3_read()) {  // if any of the keys is pressed: go to TUTORIAL
           current_state = STATE_TUTORIAL;
@@ -169,7 +165,7 @@ int main(void) {
           break;
         }
 
-        if(knobL_read() || knobR_read()){
+        if (knobL_read() || knobR_read()) {
           computer_input_detected = 1;
           page_index = 0;
           tutorial_time_counter = 0;
@@ -185,9 +181,9 @@ int main(void) {
         tutorial_time_counter++;
         tutorial_time_counter %= 50;
         if (!tutorial_time_counter) {
-            LCD_Clear_screen();
+          LCD_Clear_screen();
           if (page_index == 3) {
-             LCD_Clear_screen();
+            LCD_Clear_screen();
             current_state = STATE_LAYER2_STAGE1;
             break;
           } else {
@@ -203,11 +199,11 @@ int main(void) {
         } else if (page_index == 1) {
           LCD_showString(1, 1, "Top Button");
           LCD_showString(2, 1, "for TX");
-          
+
         } else if (page_index == 2) {
           LCD_showString(1, 1, "Bottom Button");
           LCD_showString(2, 1, "for RX");
-          
+
         } else if (page_index == 3) {
           LCD_showString(1, 1, "Middle Button");
           LCD_showString(2, 1, "to Confirm");
@@ -227,12 +223,12 @@ int main(void) {
         LCD_showString(2, 6, "Select Mode");
         LCD_showString(2, 1, RX);
 
-        if (button1_read()){
+        if (button1_read()) {
           LCD_Clear_screen();
           TXEN_N = 1;
-          LCD_showString(1,1, "RX Mode is");
+          LCD_showString(1, 1, "RX Mode is");
           LCD_showString_clear_delay_1s(2, 1, "selected");
-        } else if (button3_read()){
+        } else if (button3_read()) {
           LCD_Clear_screen();
           TXEN_N = 0;
           LCD_showString(1, 1, "TX Mode is");
@@ -244,12 +240,12 @@ int main(void) {
           LCD_Clear_screen();
         }
 
-        if(knobL_read()){
+        if (knobL_read()) {
           current_state = STATE_WAIT;
           LCD_Clear_screen();
         }
 
-        if(knobR_read()){
+        if (knobR_read()) {
           current_state = STATE_LAYER3;
           LCD_Clear_screen();
         }
@@ -275,9 +271,13 @@ int main(void) {
         if (button2_read()) {
           user_confirmed_freq_Mhz = encoder1_count;
           user_confirmed_freq_Khz = encoder2_count;
-          //PLL freq cannot be too large, as the 8bit mcu cannot compute large int accurately (for unknown reason, but reasonable)
-          //Need further verifications. Increase of accuracy is possible.
-          PLL_freq = user_confirmed_freq_Mhz * 10; + (user_confirmed_freq_Khz / 100); //Accurate to with in .1 decimal places. Limited by MCU computating power
+          // PLL freq cannot be too large, as the 8bit mcu cannot compute large
+          // int accurately (for unknown reason, but reasonable) Need further
+          // verifications. Increase of accuracy is possible.
+          PLL_freq = user_confirmed_freq_Mhz * 10;
+          +(user_confirmed_freq_Khz /
+            100);  // Accurate to with in .1 decimal places. Limited by MCU
+                   // computating power
           LCD_showString(1, 1, "Confirmed Freq:");
           LCD_showNum(2, 1, user_confirmed_freq_Mhz, 3);
           LCD_showString(2, 4, MHz);
@@ -288,72 +288,54 @@ int main(void) {
           current_state = STATE_CONFIG_PLL_TXEN;
         }
 
-        if(knobL_read()){
+        if (knobL_read()) {
           current_state = STATE_LAYER2_STAGE1;
           LCD_Clear_screen();
         }
 
         break;
 
-        case STATE_CONFIG_PLL_TXEN:  // configure PLL and TXEN.
+      case STATE_CONFIG_PLL_TXEN:  // configure PLL and TXEN.
         // DO NOT deal with computer input when configure PLL and TXEN
-          reset_pll();
-          set_phase(0);
-          cd = 0;
-          double FVCO_PLLfreqRatio = 0.0;
-          int mult_phase = 800 / user_confirmed_freq_Mhz;
-          if (user_confirmed_freq_Mhz <= 6){
-            mult_phase /= 3;
-          }
-          set_phase(mult_phase);
-          /***********/
-          FVCO_PLLfreqRatio = 8000 / PLL_freq;
-          double dummy = FVCO_PLLfreqRatio - 10;
-          cd = 100000.0 / dummy;
-          setup_clock(SI5351_PLL_A, SI5351_PORT0, 10, 100000, cd);
-          setup_clock(SI5351_PLL_A, SI5351_PORT1,10, 100000, cd );
-          reset_pll();
-          enable_clocks(enabled);
-
-
-          // configure TX/RX mode
-          if (TXEN_N) {
-            PORTD |= (1 << TXEN_BIT);
-          } else {
-            PORTD &= ~(1 << TXEN_BIT);
-          }
-          if(computer_input_detected){
-            current_state = STATE_COMPUTER_MODE;
-          }else{
-            current_state = STATE_WAIT;
-          }
-        break;
-
-        
-        case STATE_COMPUTER_MODE:
-        state = 0; //state reset;
-        LCD_showString(1, 1, "COMP CTRL");
-        int i=0; //software delay
-        bool user=false;
-        while(i!=30000){
-          if(knobL_read() || knobR_read()){
-            computer_input_detected = 0;
-            current_state = STATE_WAIT;
-            user =true;
-            break;
-          }
-          i++;
+        reset_pll();
+        set_phase(0);
+        cd = 0;
+        double FVCO_PLLfreqRatio = 0.0;
+        int mult_phase = 800 / user_confirmed_freq_Mhz;
+        if (user_confirmed_freq_Mhz <= 6) {
+          mult_phase /= 3;
         }
-        if(user==false){
-          handle_UART();
-          current_state = UART_DISPLAY;
-        }else{
+        set_phase(mult_phase);
+        /***********/
+        FVCO_PLLfreqRatio = 8000 / PLL_freq;
+        double dummy = FVCO_PLLfreqRatio - 10;
+        cd = 100000.0 / dummy;
+        setup_clock(SI5351_PLL_A, SI5351_PORT0, 10, 100000, cd);
+        setup_clock(SI5351_PLL_A, SI5351_PORT1, 10, 100000, cd);
+        reset_pll();
+        enable_clocks(enabled);
+
+        // configure TX/RX mode
+        if (TXEN_N) {
+          PORTD |= (1 << TXEN_BIT);
+        } else {
+          PORTD &= ~(1 << TXEN_BIT);
+        }
+        if (computer_input_detected) {
+          current_state = STATE_COMPUTER_MODE;
+        } else {
           current_state = STATE_WAIT;
-          break;
-        }  // parse computer command
+        }
+        break;
+
+      case STATE_COMPUTER_MODE:
+        state = 0;  // state reset;
+        LCD_showString(1, 1, "COMP CTRL");
+        handle_UART();
+        current_state = UART_DISPLAY;
+        // parse computer command
 
         break;
-        
 
       case UART_DISPLAY:
         comp_display();
@@ -446,7 +428,7 @@ void handle_UART() {
                        // pin，以及PLL的频率，所以不需要再跳转到STATE_CONFIG_PLL_TXEN
       index = 0;  // Reset buffer for next command.
       break;
-    } else{
+    } else {
       // Append character to command buffer if there is room.
       if (index < CMD_BUFFER_SIZE - 1) {
         cmdBuffer[index++] = received;
@@ -459,48 +441,37 @@ void handle_UART() {
   }
 }
 
-void comp_display(){
-  while(1){
-    if(state == 1){ //FA
-      LCD_showString(1, 1, frequency);
-      LCD_showNum(2, 1, Mhz, 3);
-      LCD_showString(2, 4, MHz);
-      LCD_showChar(2, 7, space);
-      LCD_showNum(2, 8, Khz, 3);
-      LCD_showString(2, 11, KHz);
-      LCD_showString_clear_delay_1s(1, 16, " ");
-      
-        user_confirmed_freq_Mhz = Mhz;
-        user_confirmed_freq_Khz = Khz;
-        PLL_freq = Mhz * 10 + Khz / 100; //Accurate to with in .1 decimal places. Limited by MCU computating power
-        LCD_showString(1, 1, "Confirmed Freq:");
-        LCD_showNum(2, 1, Mhz, 3);
-        LCD_showString(2, 4, MHz);
-        LCD_showChar(2, 7, space);
-        LCD_showNum(2, 8, Khz, 3);
-        LCD_showString(2, 11, KHz);
-        LCD_showString_clear_delay_1s(1, 16, " ");
-        current_state = STATE_CONFIG_PLL_TXEN;
-      
+void comp_display() {
+  while (1) {
+    if (state == 1) {  // FA
+      // LCD_showString(1, 1, frequency);
+      // LCD_showNum(2, 1, Mhz, 3);
+      // LCD_showString(2, 4, MHz);
+      // LCD_showChar(2, 7, space);
+      // LCD_showNum(2, 8, Khz, 3);
+      // LCD_showString(2, 11, KHz);
+      // LCD_showString_clear_delay_1s(1, 16, " ");
+
+      user_confirmed_freq_Mhz = Mhz;
+      user_confirmed_freq_Khz = Khz;
+      PLL_freq =
+          Mhz * 10 + Khz / 100;  // Accurate to with in .1 decimal places.
+                                 // Limited by MCU computating power
+      // LCD_showString(1, 1, "Confirmed Freq:");
+      // LCD_showNum(2, 1, Mhz, 3);
+      // LCD_showString(2, 4, MHz);
+      // LCD_showChar(2, 7, space);
+      // LCD_showNum(2, 8, Khz, 3);
+      // LCD_showString(2, 11, KHz);
+      // LCD_showString_clear_delay_1s(1, 16, " ");
+      current_state = STATE_CONFIG_PLL_TXEN;
+
       // computer_input_detected = false; // Reset the flag to stop processing
       break;
-    }
-    else if(state == 2){ //TX 
-      LCD_showString(1, 1, "Mode Confirmed:");
-      LCD_showString_clear_delay_1s(2, 1, "TX Mode"); 
-      TXEN_N=0;
-      if (TXEN_N) {
-        PORTD |= (1 << TXEN_BIT);
-      } else {
-        PORTD &= ~(1 << TXEN_BIT);
-      }
-      current_state = STATE_COMPUTER_MODE; 
-      break;
-    }
-    else if(state == 3){ //RX
-      LCD_showString(1, 1, "Mode Confirmed:");
-      LCD_showString_clear_delay_1s(2, 1, "RX Mode"); 
-      TXEN_N=1;
+    } else if (state == 2) {  // TX
+      // LCD_showString(1, 1, "Mode Confirmed:");
+      // LCD_showString_clear_delay_1s(2, 1, "TX Mode");
+      TXEN_N = 0;
       if (TXEN_N) {
         PORTD |= (1 << TXEN_BIT);
       } else {
@@ -508,24 +479,32 @@ void comp_display(){
       }
       current_state = STATE_COMPUTER_MODE;
       break;
-    }
-    else if(state == 4){ //IF
-      LCD_Clear_screen();
-      LCD_showString(1, 1, "IF:");
-      LCD_showNum(1,4, 1,3);
-      LCD_showNum(1,7,user_confirmed_freq_Mhz,3);
-      LCD_showNum(1,10,user_confirmed_freq_Khz,3);
-      LCD_showNum(1,13,0,3);
-      LCD_showString(2,1,"0000000C00000");
-      LCD_showString_clear_delay_1s(2,16, " ");
+    } else if (state == 3) {  // RX
+      // LCD_showString(1, 1, "Mode Confirmed:");
+      // LCD_showString_clear_delay_1s(2, 1, "RX Mode");
+      TXEN_N = 1;
+      if (TXEN_N) {
+        PORTD |= (1 << TXEN_BIT);
+      } else {
+        PORTD &= ~(1 << TXEN_BIT);
+      }
       current_state = STATE_COMPUTER_MODE;
       break;
-    } else if (state == 5){
+    } else if (state == 4) {  // IF
+      // LCD_Clear_screen();
+      // LCD_showString(1, 1, "IF:");
+      // LCD_showNum(1,4, 1,3);
+      // LCD_showNum(1,7,user_confirmed_freq_Mhz,3);
+      // LCD_showNum(1,10,user_confirmed_freq_Khz,3);
+      // LCD_showNum(1,13,0,3);
+      // LCD_showString(2,1,"0000000C00000");
+      // LCD_showString_clear_delay_1s(2,16, " ");
+      current_state = STATE_COMPUTER_MODE;
+      break;
+    } else if (state == 5) {
       current_state = STATE_WAIT;
-      LCD_Clear_screen();
+      // LCD_Clear_screen();
       break;
     }
   }
-
 }
-
