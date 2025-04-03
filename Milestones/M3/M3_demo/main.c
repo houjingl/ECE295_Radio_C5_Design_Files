@@ -329,7 +329,7 @@ int main(void) {
         break;
 
       case STATE_COMPUTER_MODE:
-        state = 0;  // state reset;
+        //state = 0;  // state reset;
         LCD_showString(1, 1, "COMP CTRL");
         handle_UART();
         current_state = UART_DISPLAY;
