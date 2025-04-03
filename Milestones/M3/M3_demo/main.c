@@ -274,9 +274,7 @@ int main(void) {
           // PLL freq cannot be too large, as the 8bit mcu cannot compute large
           // int accurately (for unknown reason, but reasonable) Need further
           // verifications. Increase of accuracy is possible.
-          PLL_freq = user_confirmed_freq_Mhz * 10;
-          +(user_confirmed_freq_Khz /
-            100);  // Accurate to with in .1 decimal places. Limited by MCU
+          PLL_freq = user_confirmed_freq_Mhz * 10 + (user_confirmed_freq_Khz /100);  // Accurate to with in .1 decimal places. Limited by MCU
                    // computating power
           LCD_showString(1, 1, "Confirmed Freq:");
           LCD_showNum(2, 1, user_confirmed_freq_Mhz, 3);
