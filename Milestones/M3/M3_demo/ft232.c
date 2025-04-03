@@ -69,18 +69,20 @@ void USART0_SendString(const char *str) {
 //   FB: e.g., "FB014300000;" to set VFO-B frequency.
 //   IF: e.g., "IF;" for additional information command.
 void ProcessCATCommand(const char *cmd) {
+    unsigned char ai_register = 0;
+    unsigned char st_register = 0;
     if (strncmp(cmd, "TX", 2) == 0) {
         // TX command: expects a parameter '1' (enable) or '0' (disable) after "TX"
         if (strlen(cmd) >= 3) {
             if (cmd[2] == '1') {
                 //set state
-                state=2;
-                PORTD |= (1 << PD3);  // Example: set PD2 high to enable TX
+                state = 2;
+                PORTD |= (1 << PD3);  // Example: set PD3 high to enable TX
                 USART0_SendString("TX Enabled\r\n");
             } else if (cmd[2] == '0') {
                 //set state
-                state=3;
-                PORTD &= ~(1 << PD3); // Set PD2 low to disable TX
+                state = 3;
+                PORTD &= ~(1 << PD3); // Set PD3 low to disable TX
                 USART0_SendString("TX Disabled\r\n");
             } else {
                 USART0_SendString("Invalid TX parameter\r\n");
@@ -99,10 +101,9 @@ void ProcessCATCommand(const char *cmd) {
             sprintf(buffer, "VFO-A set to %ld Hz\r\n", freq);
             USART0_SendString(buffer);
             // Update global variables for frequency display
-            Mhz = freq / 1000000; // Extract MHz part
-            Khz = (freq % 1000000) / 1000; // Extract kHz part
-            IF_freq = freq; // Example: calculate IF frequency
-            // mhz khz 000
+            Mhz = freq / 1000000;         // Extract MHz part
+            Khz = (freq % 1000000) / 1000;  // Extract kHz part
+            IF_freq = freq;               // Save frequency for IF query
         } else {
             USART0_SendString("FA command missing frequency\r\n");
         }
@@ -116,13 +117,81 @@ void ProcessCATCommand(const char *cmd) {
         } else {
             USART0_SendString("FB command missing frequency\r\n");
         }
+    }
+    // --- New commands added below without changing any existing code ---
+
+    else if (strncmp(cmd, "AI", 2) == 0) {
+        // AI command: does not change the state of the transmitter.
+        // If a parameter is provided (e.g., "AI0;" or "AI1;"), update the internal register.
+        // If no parameter (i.e., "AI;"), return the current setting.
+        if (strlen(cmd) > 3) {  // expecting "AI0;" or "AI1;"
+            if (cmd[2] == '0') {
+                ai_register = 0;
+                USART0_SendString("AI0;");
+            } else if (cmd[2] == '1') {
+                ai_register = 1;
+                USART0_SendString("AI1;");
+            } else {
+                USART0_SendString("Invalid AI parameter\r\n");
+            }
+        } else {
+            // Query: return current AI register setting
+            if (ai_register == 0) {
+                USART0_SendString("AI0;");
+            } else {
+                USART0_SendString("AI1;");
+            }
+        }
+    } else if (strncmp(cmd, "ST", 2) == 0) {
+        // ST command: works similar to the AI command.
+        if (strlen(cmd) > 3) {  // expecting "ST0;" or "ST1;"
+            if (cmd[2] == '0') {
+                st_register = 0;
+                USART0_SendString("ST0;");
+            } else if (cmd[2] == '1') {
+                st_register = 1;
+                USART0_SendString("ST1;");
+            } else {
+                USART0_SendString("Invalid ST parameter\r\n");
+            }
+        } else {
+            // Query: return current ST register setting
+            if (st_register == 0) {
+                USART0_SendString("ST0;");
+            } else {
+                USART0_SendString("ST1;");
+            }
+        }
+    } else if (strncmp(cmd, "ID", 2) == 0) {
+        // ID query: return a 7-character string: "ID0650;"
+        USART0_SendString("ID0650;");
+    } else if (strncmp(cmd, "MD0", 3) == 0) {
+        // MD0 query: return a 5-character string: "MD0C;"
+        USART0_SendString("MD0C;");
+    } else if (strncmp(cmd, "SH0", 3) == 0) {
+        // SH0 query: return a 7-character string: "SH0000;"
+        USART0_SendString("SH0000;");
+    } else if (strncmp(cmd, "NA0", 3) == 0) {
+        // NA0 query: return a 5-character string: "NA00;"
+        USART0_SendString("NA00;");
     } else if (strncmp(cmd, "IF", 2) == 0) {
-        // IF command: process IF settings.
-        // Depending on your design, you might extract additional parameters.
-        
-        // set state
-        state = 4;
-        USART0_SendString("IF command processed\r\n");
+        // Updated IF command:
+        // For an IF query ("IF;"), return a 28-character string:
+        // "IF001xxxxxxxxx+000000C00000;" where xxxxxxxxx is the 9-digit integer from the FA command.
+        if (strcmp(cmd, "IF;") == 0) {
+            char freqStr[10];  // 9 digits plus terminating null
+            sprintf(freqStr, "%09ld", IF_freq);
+            char buffer[40];
+            sprintf(buffer, "IF001%s+000000C00000;", freqStr);
+            USART0_SendString(buffer);
+        } else {
+            // Otherwise, use the original IF command behavior
+            state = 4;
+            USART0_SendString("IF command processed\r\n");
+        }
+    } else if (strncmp(cmd, "EX", 2) == 0) {
+        // EX command remains unchanged.
+        state = 5;
     } else {
         USART0_SendString("Unknown CAT command\r\n");
     }

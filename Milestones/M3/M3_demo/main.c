@@ -185,8 +185,11 @@ int main(void) {
         tutorial_time_counter++;
         tutorial_time_counter %= 50;
         if (!tutorial_time_counter) {
+            LCD_Clear_screen();
           if (page_index == 3) {
+             LCD_Clear_screen();
             current_state = STATE_LAYER2_STAGE1;
+            break;
           } else {
             page_index++;
             LCD_Clear_screen();
@@ -328,6 +331,7 @@ int main(void) {
 
         
         case STATE_COMPUTER_MODE:
+        state = 0; //state reset;
         LCD_showString(1, 1, "COMP CTRL");
         int i=0; //software delay
         bool user=false;
@@ -429,19 +433,10 @@ void encoder_init() {
 // uart
 void handle_UART() {
   while (1) {
-    if((UCSR0A & (1 << RXC))){
-      uint8_t received = USART0_Receive();
-      // Echo back the received character (optional)
-      USART0_Transmit(received);
-    }
-
-    if(knobL_read() || knobR_read()){
-      computer_input_detected = 0;
-      current_state = STATE_WAIT;
-  
-      break;
-    }
-    
+    uint8_t received = 0;
+    received = USART0_Receive();
+    // Echo back the received character (optional)
+    USART0_Transmit(received);
 
     if (received == ';') {
       // End-of-command detected; terminate string and process command.
@@ -451,7 +446,7 @@ void handle_UART() {
                        // pin，以及PLL的频率，所以不需要再跳转到STATE_CONFIG_PLL_TXEN
       index = 0;  // Reset buffer for next command.
       break;
-    } else {
+    } else{
       // Append character to command buffer if there is room.
       if (index < CMD_BUFFER_SIZE - 1) {
         cmdBuffer[index++] = received;
@@ -514,16 +509,20 @@ void comp_display(){
       current_state = STATE_COMPUTER_MODE;
       break;
     }
-    else if(state == 4){ //IF 未完成
+    else if(state == 4){ //IF
       LCD_Clear_screen();
       LCD_showString(1, 1, "IF:");
-      LCD_showNum(1,4,000,3);
+      LCD_showNum(1,4, 1,3);
       LCD_showNum(1,7,user_confirmed_freq_Mhz,3);
       LCD_showNum(1,10,user_confirmed_freq_Khz,3);
       LCD_showNum(1,13,0,3);
-      LCD_showNum(2,1,0000000000000,13);
+      LCD_showString(2,1,"0000000C00000");
       LCD_showString_clear_delay_1s(2,16, " ");
       current_state = STATE_COMPUTER_MODE;
+      break;
+    } else if (state == 5){
+      current_state = STATE_WAIT;
+      LCD_Clear_screen();
       break;
     }
   }
