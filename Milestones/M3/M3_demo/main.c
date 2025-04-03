@@ -418,7 +418,7 @@ void handle_UART() {
     uint8_t received = 0;
     received = USART0_Receive();
     // Echo back the received character (optional)
-    USART0_Transmit(received);
+    //USART0_Transmit(received);
 
     if (received == ';') {
       // End-of-command detected; terminate string and process command.
