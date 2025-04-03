@@ -112,7 +112,6 @@ void ProcessCATCommand(const char *cmd) {
       IF_freq = freq;                 // Save frequency for IF query
     } else {
        USART0_SendString(fa);
-       fa[0]='\0';
     }
   } else if (strncmp(cmd, "FB", 2) == 0) {
     // FB command: set or read VFO-B frequency.
@@ -187,17 +186,13 @@ void ProcessCATCommand(const char *cmd) {
     // For an IF query ("IF;"), return a 28-character string:
     // "IF001xxxxxxxxx+000000C00000;" where xxxxxxxxx is the 9-digit integer
     // from the FA command.
-    if (strcmp(cmd, "IF;") == 0) {
-      char freqStr[10];  // 9 digits plus terminating null
-                         // sprintf(freqStr, "%09ld", IF_freq);
-      char buffer[40];
-      //sprintf(buffer, "IF001%s+000000C00000;", freqStr);
-      USART0_SendString(buffer);
-    } else {
-      // Otherwise, use the original IF command behavior
-      state = 4;
-      USART0_SendString("IF command processed\r\n");
-    }
+    char * if_query = fa + 2;
+    char buffer[40];
+    sprintf(buffer, "IF001%s+000000C00000;", if_query);
+    USART0_SendString(buffer);
+    // Otherwise, use the original IF command behavior
+    state = 4;
+    USART0_SendString("IF command processed\r\n");
   } else if (strncmp(cmd, "EX", 2) == 0) {
     // EX command remains unchanged.
     state = 5;
